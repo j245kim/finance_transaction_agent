@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Chat Interface</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f9;
+      }
+
+      .chat-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        max-width: 800px;
+        margin: 0 auto;
+        height: 100vh;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        background: #fff;
+        border-radius: 8px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .dropdown-container {
+        position: relative;
+        display: inline-block;
+      }
+
+      .dropdown-button {
+        display: flex;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: #fff;
+        color: black;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      .dropdown-button img {
+        margin-left: 8px;
+        width: 12px;
+        height: 12px;
+      }
+
+      .dropdown-button:hover {
+        background-color: #f0f0f0;
+      }
+
+      .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        min-width: 200px;
+      }
+
+      .dropdown-menu button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 10px;
+        border: none;
+        background: white;
+        text-align: left;
+        font-size: 14px;
+        cursor: pointer;
+        color: #333;
+      }
+
+      .dropdown-menu button .left-content {
+        display: flex;
+        align-items: center;
+      }
+
+      .dropdown-menu button img.model-icon {
+        margin-right: 10px;
+        width: 20px;
+        height: 20px;
+      }
+
+      .dropdown-menu button img.check-icon {
+        width: 16px;
+        height: 16px;
+        visibility: hidden;
+      }
+
+      .dropdown-menu button.selected img.check-icon {
+        visibility: visible;
+      }
+
+      .dropdown-menu button:hover {
+        background: #f0f0f0;
+      }
+
+      .messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+
+      .message {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+      }
+
+      .message.user {
+        justify-content: flex-end;
+      }
+
+      .message.ai {
+        justify-content: flex-start;
+      }
+
+      .message-content {
+        max-width: 70%;
+        padding: 10px;
+        border-radius: 10px;
+        font-size: 14px;
+      }
+
+      .message.user .message-content {
+        background: #d1e7dd;
+        color: #0f5132;
+      }
+
+      .message.ai .message-content {
+        background: #e9ecef;
+        color: #495057;
+      }
+
+      .input-container {
+        display: flex;
+      }
+
+      input[type="text"] {
+        flex: 1;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 5px 0 0 5px;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        background: #007bff;
+        color: white;
+        cursor: pointer;
+        border-radius: 0 5px 5px 0;
+      }
+
+      button:hover {
+        background: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <div class="header">
+        <div class="dropdown-container">
+          <button class="dropdown-button" onclick="toggleDropdown()">
+            <span id="currentModel">Bllossom</span>
+            <img src="http://127.0.0.1:8000/images/downarrow" alt="arrow" />
+          </button>
+          <div class="dropdown-menu" id="dropdownMenu">
+            <button
+              onclick="selectModel('Bllossom')"
+              data-model="Bllossom"
+              class="selected"
+            >
+              <div class="left-content">
+                <img
+                  src="http://127.0.0.1:8000/images/bllossom"
+                  alt="Bllossom"
+                  class="model-icon"
+                />
+                Bllossom
+              </div>
+              <img
+                src="http://127.0.0.1:8000/images/check"
+                alt="check"
+                class="check-icon"
+              />
+            </button>
+            <button
+              onclick="selectModel('LG AI EXAONE')"
+              data-model="LG AI EXAONE"
+            >
+              <div class="left-content">
+                <img
+                  src="http://127.0.0.1:8000/images/lg_ai_exaone"
+                  alt="LG AI EXAONE"
+                  class="model-icon"
+                />
+                LG AI EXAONE
+              </div>
+              <img
+                src="http://127.0.0.1:8000/images/check"
+                alt="check"
+                class="check-icon"
+              />
+            </button>
+            <button onclick="selectModel('etc')" data-model="etc">
+              <div class="left-content">
+                <img
+                  src="http://127.0.0.1:8000/images/huggingface"
+                  alt="etc"
+                  class="model-icon"
+                />
+                etc
+              </div>
+              <img
+                src="http://127.0.0.1:8000/images/check"
+                alt="check"
+                class="check-icon"
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="messages" id="messages"></div>
+      <div class="input-container">
+        <input
+          type="text"
+          id="userInput"
+          placeholder="Type your message here..."
+        />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+    <script>
+      let currentSelectedModel = "Bllossom";
+
+      function toggleDropdown() {
+        const menu = document.getElementById("dropdownMenu");
+        menu.style.display = menu.style.display === "block" ? "none" : "block";
+      }
+
+      function selectModel(model) {
+        const buttons = document.querySelectorAll(".dropdown-menu button");
+        buttons.forEach((button) => {
+          if (button.getAttribute("data-model") === model) {
+            button.classList.add("selected");
+          } else {
+            button.classList.remove("selected");
+          }
+        });
+
+        currentSelectedModel = model;
+        document.getElementById("currentModel").textContent = model;
+        toggleDropdown();
+      }
+
+      document.addEventListener("click", (event) => {
+        const dropdownMenu = document.getElementById("dropdownMenu");
+        const dropdownButton = document.querySelector(".dropdown-button");
+
+        if (
+          dropdownMenu.style.display === "block" &&
+          !dropdownButton.contains(event.target) &&
+          !dropdownMenu.contains(event.target)
+        ) {
+          dropdownMenu.style.display = "none";
+        }
+      });
+
+      async function sendMessage() {
+        const inputField = document.getElementById("userInput");
+        const messagesDiv = document.getElementById("messages");
+        const userMessage = inputField.value;
+
+        if (!userMessage.trim()) return;
+
+        const userMessageDiv = document.createElement("div");
+        userMessageDiv.className = "message user";
+        userMessageDiv.innerHTML = `<div class="message-content">${userMessage}</div>`;
+        messagesDiv.appendChild(userMessageDiv);
+
+        inputField.value = "";
+
+        const aiMessageDiv = document.createElement("div");
+        aiMessageDiv.className = "message ai";
+        const aiMessageContent = document.createElement("div");
+        aiMessageContent.className = "message-content";
+        aiMessageContent.textContent = "...";
+        aiMessageDiv.appendChild(aiMessageContent);
+        messagesDiv.appendChild(aiMessageDiv);
+
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+        try {
+          // API 엔드포인트를 선택된 모델에 따라 다르게 설정
+          let apiEndpoint;
+          switch (currentSelectedModel) {
+            case "Bllossom":
+              apiEndpoint = "http://127.0.0.1:8000/bllossom/";
+              break;
+            case "LG AI EXAONE":
+              apiEndpoint = "http://127.0.0.1:8000/lg-ai-exaone/";
+              break;
+            case "etc":
+              apiEndpoint = "http://127.0.0.1:8000/etc/";
+              break;
+            default:
+              apiEndpoint = "http://127.0.0.1:8000/lg-ai-exaone/";
+          }
+
+          const response = await fetch(
+            `${apiEndpoint}${encodeURIComponent(userMessage)}`
+          );
+          const data = await response.json();
+          aiMessageContent.textContent = data.content;
+        } catch (error) {
+          console.error("Error fetching AI response:", error);
+          aiMessageContent.textContent = "Error fetching response.";
+        }
+      }
+
+      const inputField = document.getElementById("userInput");
+      inputField.addEventListener("keyup", (event) => {
+        if (event.key === "Enter") {
+          sendMessage();
+        }
+      });
+    </script>
+  </body>
+</html>
