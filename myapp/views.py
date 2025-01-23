@@ -18,7 +18,7 @@ def load_images(req, image_name):
         case 'downarrow':
             image_path = rf'{image_path}\model_images\down_arrow.png'
         case 'bllossom':
-            image_path = rf'{image_path}\model_images\bllossom_icon.png'
+            image_path = rf'{image_path}\model_images\bllossom_mini_icon.png'
         case 'chatgpt':
             image_path = rf'{image_path}\model_images\chatgpt.png'
         case 'huggingface':
