@@ -1,0 +1,4 @@
+*.env
+myproject/settings.py
+kis_devlp.yaml
+models/
