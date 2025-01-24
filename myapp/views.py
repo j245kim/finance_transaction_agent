@@ -99,6 +99,12 @@ def chatgpt(req, message):
     load_dotenv()
     api_key = os.getenv('OPEN_API_KEY_sesac')
 
+    return JsonResponse({'content': '죄송합니다. ChatGPT 모델은 아직 구현되지 않아서 답변을 할 수 없습니다.'}, json_dumps_params={'ensure_ascii': False}, safe=False, status=200)
+
+
+def etc(req, message):
+    return JsonResponse({'content': '죄송합니다. 해당 모델은 아직 구현되지 않아서 답변을 할 수 없습니다.'}, json_dumps_params={'ensure_ascii': False}, safe=False, status=200)
+
 
 def invest_chat(req, invest_rank):
-    return JsonResponse({'response': '확인'}, json_dumps_params={'ensure_ascii': False}, safe=False, status=200)
+    return JsonResponse({'content': '확인'}, json_dumps_params={'ensure_ascii': False}, safe=False, status=200)

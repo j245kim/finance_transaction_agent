@@ -23,5 +23,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('images/<str:image_name>', views.load_images),
     path('bllossom/<str:message>', views.bllossom),
-    path('invest_chat/<str:invest_rank>', views.invest_chat)
+    path("chatgpt/<str:message>", views.chatgpt),
+    path("etc/<str:message>", views.etc),
+    path('invest_chat/<str:invest_rank>', views.invest_chat),
 ]
