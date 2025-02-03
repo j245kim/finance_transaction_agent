@@ -4,9 +4,9 @@
     <h3>Login</h3>
     <form method="POST">
       {% csrf_token %} {{form}}
-      <button type="submit">Submit</button>
+      <button type="submit">Sign in</button>
     </form>
     <a class="signup-link" href="{% url 'base:authView' %}">Signup</a>
   </div>
 </div>
-{% endblock content %}a
+{% endblock content %}
