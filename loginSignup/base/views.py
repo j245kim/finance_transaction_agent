@@ -59,6 +59,7 @@ def profile_edit(request):
                 'email': user.email,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
+                'password': user.password,  
             }
 
             # 옛날 파일 없에기
