@@ -47,12 +47,24 @@ def authView(request):
 
 @login_required
 def profile_edit(request):
-    # 로그인한 사용자만 접근할 수 있도록 설정
     user = request.user  # 현재 로그인한 사용자
     if request.method == 'POST':
         form = ProfileForm(request.POST, instance=user)  # 기존 정보를 채운 폼
         if form.is_valid():
             form.save()  # 유효한 폼은 저장
+
+            # mongodb 업데이트트
+            user_info = {
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+            }
+
+            # 옛날 파일 없에기
+            collection.delete_one({'username': user.username})  # 삭제
+            collection.insert_one(user_info)  # 신규 정보 삽입
+
             return redirect('/')  # 홈으로 다시
     else:
         form = ProfileForm(instance=user)  # GET 요청 시, 기존 사용자 정보로 폼을 채움
