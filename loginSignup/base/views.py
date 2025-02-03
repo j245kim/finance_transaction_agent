@@ -10,6 +10,8 @@ from django.contrib.auth.hashers import make_password
 from dotenv import load_dotenv
 import os 
 
+from .forms import ProfileForm 
+
 # load .env
 load_dotenv()
 
@@ -42,3 +44,17 @@ def authView(request):
         form = EncryptedUserCreationForm()
         
     return render(request, "registration/signup.html", {"form": form})
+
+@login_required
+def profile_edit(request):
+    # 로그인한 사용자만 접근할 수 있도록 설정
+    user = request.user  # 현재 로그인한 사용자
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=user)  # 기존 정보를 채운 폼
+        if form.is_valid():
+            form.save()  # 유효한 폼은 저장
+            return redirect('/')  # 홈으로 다시
+    else:
+        form = ProfileForm(instance=user)  # GET 요청 시, 기존 사용자 정보로 폼을 채움
+
+    return render(request, 'registration/profile_edit.html', {'form': form})
