@@ -71,3 +71,9 @@ def profile_edit(request):
         form = ProfileForm(instance=user)  # GET 요청 시, 기존 사용자 정보로 폼을 채움
 
     return render(request, 'registration/profile_edit.html', {'form': form})
+
+def manual(request):
+    return render(request, "registration/function.html", {})
+
+def introduction (request):
+    return render(request, "registration/introduction.html", {})

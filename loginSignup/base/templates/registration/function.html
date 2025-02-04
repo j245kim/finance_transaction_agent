@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Financial Advisor</title>
-    <link rel="stylesheet" href="function.css" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/function.css' %}" />
   </head>
   <body>
     <header>
@@ -20,9 +21,9 @@
         <p class="release-date">2025년도 발매</p>
         <p class="comment">AI-powered Finance Advisor Agent</p>
         <div class="cta-buttons">
-          <a href="#" class="cta">Login </a>
+          <a href="{% url 'base:login' %}" class="cta">Login </a>
           <a href="#" class="cta">Learn More</a>
-          <a href="#" class="cta">Start Now</a>
+          <a href="{% url 'base:home' %}" class="cta">Start Now</a>
         </div>
       </section>
 
