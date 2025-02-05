@@ -16,7 +16,7 @@ from llama_cpp import Llama
 from transformers import AutoTokenizer, PreTrainedTokenizer
 
 from pymongo import MongoClient
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.shortcuts import render
 from django.http import JsonResponse, FileResponse
@@ -29,87 +29,8 @@ collection = db["info"] # 내가 지정한 컬렉션 이름
 
 # Create your views here.
 
-def load_images(req, image_name):
-    image_path = rf'{Path(__file__).parents[1]}\images'
-    match image_name:
-        case 'downarrow':
-            image_path = rf'{image_path}\model_images\down_arrow.png'
-        case 'bllossom':
-            image_path = rf'{image_path}\model_images\bllossom_mini_icon.png'
-        case 'chatgpt':
-            image_path = rf'{image_path}\model_images\chatgpt.png'
-        case 'huggingface':
-            image_path = rf'{image_path}\model_images\hf_icon.png'
-        case 'check':
-            image_path = rf'{image_path}\model_images\check.png'
-        case _:
-            image_path = rf'{image_path}\model_images\question_mark.png'
-        
-    return FileResponse(open(image_path, 'rb'), content_type='image/png')
 
-def bllossom(req, message):
-    def prompt_gen(tokenizer: PreTrainedTokenizer, messages: list[dict[str, str]], max_tokens) -> str:
-        """사전훈련 된 Tokenizer와 messages를 통해 prompt를 생성하는 함수
-        
-        Args:
-            tokenizer (PreTrainedTokenizer): 사전훈련 된 Tokenizer
-            messages (list[dict[str, str]]): 대화 내용이 담긴 messages
-            max_tokens (int): 생성할 prompt의 최대 길이
-            
-        Returns:
-            prompt (str): 생성된 prompt"""
-        
-        prompt = tokenizer.apply_chat_template(
-                                                    messages, 
-                                                    tokenize=False,
-                                                    add_generation_prompt=True
-                                                )
 
-        prompt = prompt.replace('<|begin_of_text|>', '').replace('<|eot_id|>', '')
-        prompt = prompt.replace('<|start_header_id|>', '\n\n<|start_header_id|>').strip()
-
-        if len(prompt) >= max_tokens:
-            del messages[1:3]
-            prompt = prompt_gen(tokenizer, messages, max_tokens)
-
-        return prompt
-    
-    model_dir_path = rf'{Path(__file__).parents[1]}\models\Bllossom'
-    model_path = rf'{model_dir_path}\llama-3.2-Korean-Bllossom-3B-gguf-Q4_K_M.gguf'
-    tokenizer = AutoTokenizer.from_pretrained(model_dir_path)
-    model = Llama(model_path)
-    # session 디렉토리에 있는 message.json 파일 경로
-    session_path = rf'{Path(__file__).parents[1]}\session\messages.json'
-
-    # Messages를 가져온 다음, 현재 요청한 message 추가
-    with open(session_path, encoding='utf-8', errors='ignore') as f:
-        messages = json.load(f)
-    messages.append({"role": "user", "content": message})
-    
-    # ChatBot 대답
-    max_tokens = 1024
-    prompt = prompt_gen(tokenizer, messages, max_tokens)
-
-    generation_kwargs = {
-                            "max_tokens": max_tokens,
-                            "stop": ["<|eot_id|>"],
-                            "echo": True,
-                            "top_p": 0.9,
-                            "temperature": 0.6,
-                        }
-
-    resonse_msg = model(prompt, **generation_kwargs)
-    completion = resonse_msg['choices'][0]['text'][len(prompt):].strip()
-
-    model._sampler.close()
-    model.close()
-
-    messages.append({"role": "assistant", "content": completion})
-
-    with open(session_path, mode='w', encoding='utf-8', errors='ignore') as f:
-        json.dump(messages, f, ensure_ascii=False, indent=4)
-
-    return JsonResponse({'content': completion}, json_dumps_params={'ensure_ascii': False}, safe=False, status=200)
 
 def chatgpt(req, user_id ,input_string):
 
@@ -126,18 +47,56 @@ def chatgpt(req, user_id ,input_string):
         max_tokens = 50,
         api_key=api_key
     )
+    user = conversations.find_one({"user_id": user_id})
 
     if conversations.find_one({"user_id": user_id}) == None:
-        conversations.insert_one({"user_id": user_id, "messages": []})  # 새로운 유저 데이터 추가
+        conversations.insert_one({"user_id": user_id,'stack': [], 'ban':[] , "messages": []})  # 새로운 유저 데이터 추가
+ 
+    # 정해진 시간 만큼지나면 삭제하는 코드
+    # pull을 통해 stack에서 삭제
+    # 현재는 1시간이 지나면 삭제됨
+    time_threshold = datetime.now() - timedelta(hours=1)
+    conversations.update_one(
+        {"user_id": user_id},
+        {"$pull": {"stack": {"timestamp": {"$lt": time_threshold}}}}
+    )
 
 
+    # 금융 관련 질문이 아닌 횟수가 5번 이상일 시에 밴
+    if user and len(user['stack']) >= 5:
+        conversations.update_one(
+            {"user_id": user_id},
+            {'$push': {'ban': datetime.now()}}
+        )
+        return JsonResponse({'content':'금융 관련된 질문을 하지 않아서 밴되었습니다. 1시간 후에 다시 시도해주세요.'})
+
+
+    # 금융 관련 질문인지 확인하고 아닐 시에 경고 횟수와 시간을 함께 MongoDB에 저장
+    # push를 통해 stack에 저장
+    if classification_finance(input_string) == 'False':
+        conversations.update_one(
+            {"user_id": user_id},
+            {"$push": {"stack": {'value':1 ,'timestamp': datetime.now()}}}
+        )
+        return JsonResponse({'content':'금융 관련 질문이 아닙니다. 금융 관련 질문을 해주세요.'})
+   
     conversation = conversations.find_one({"user_id": user_id})
 
     messages = conversation["messages"]  # 기존 메시지 리스트 가져오기
 
     messages.append({"role": "user", "content": input_string})  # 새 메시지 추가
 
-    prompt = PromptTemplate.from_template('당신은 아주 똑똑한 AI 챗봇입니다. 사용자의 질문에 정확하고, 친절하게 답변해주세요. 대화 기록 = {message} 질문 = {content}')
+    prompt = PromptTemplate.from_template(
+        '''
+        당신은 투자어드바이저입니다. 
+        사용자의 질문을 받아들이고, 투자에 관련된 질문이 있는지 확인하세요.
+        classification_invest() 함수는 질문을 string으로 받고, 관계가 있다면 True를 반환하고, 그렇지 않다면 False를 반환합니다.
+        classification_invest() 함수를 사용하여 사용자의 질문이 투자와 관련이 있는지 확인하고,
+        관계가 있다면 투자 성향 체크를 진행하고
+        관계가 없다면 질문에 대한 대답을 해주세요.
+
+        대화 기록 = {message} 질문 = {content}
+        ''')
     # 페르소나 조정 가능합니다.
 
     chain = prompt | llm
@@ -153,13 +112,7 @@ def chatgpt(req, user_id ,input_string):
     
     return JsonResponse({'content':answer.content})
 
-def etc(req, message):
-    return JsonResponse({'content': '죄송합니다. 해당 모델은 아직 구현되지 않아서 답변을 할 수 없습니다.'}, json_dumps_params={'ensure_ascii': False}, safe=False, status=200)
-
-def invest_chat(req, invest_rank):
-    return JsonResponse({'content': '확인'}, json_dumps_params={'ensure_ascii': False}, safe=False, status=200)
-
-def classification_finance(request, input_string):
+def classification_finance(input_string):
 # 금융 관련 질문 여부 확인
     load_dotenv()
     api_key = os.getenv('OPENAI_API_KEY_sesac')
@@ -168,15 +121,22 @@ def classification_finance(request, input_string):
         api_key=api_key
     )
 
-    prompt = PromptTemplate.from_template('{message}에 대해 금융에 관련된 내용이면 True, 아니면 False를 반환하세요.')
+    prompt = PromptTemplate.from_template('''
+    {message}
+
+    금융과 무관한 내용을 금융과 억지로 연결 짓지 마세요. 
+    금융(예: 주식, 투자, 은행, 대출, 경제 등)과 직접 관련이 있는 경우에만 "True"를 반환하고, 그렇지 않다면 "False"를 반환하세요.
+    답변은 "True" 또는 "False"만 출력하세요.
+    ''')
     # 프롬포트 조정 가능합니다.
+    
     chain = prompt | llm
 
     answer = chain.invoke({'message': input_string})
 
-    return JsonResponse({'type':answer.content})
+    return answer.content
 
-def classification_invest(request, input_string):
+def classification_invest(input_string):
 # 투자 관련 진물 여부 확인
     load_dotenv()
     api_key = os.getenv('OPENAI_API_KEY_sesac')
@@ -185,13 +145,18 @@ def classification_invest(request, input_string):
         api_key=api_key
     )
 
-    prompt = PromptTemplate.from_template('{message}에 대해 투자에 관련된 내용이면 True, 아니면 False를 반환하세요.')
+    prompt = PromptTemplate.from_template(
+        '''
+        "{message}"
+        이 문장을 말한 사람이 실제로 투자를 할 의도가 있는지 여부를 판단하세요.
+        투자와 관련된 내용이 있는 경우 "True"를 반환하고, 그렇지 않은 경우 "False"를 반환하세요.
+        ''')
     # 프롬포트 조정 가능합니다. (페르소나)
     chain = prompt | llm
 
     answer = chain.invoke({'message': input_string})
 
-    return JsonResponse({'type':answer.content})
+    return answer.content
 
 def invest_search_rag(request, input_string):
     # RAG 제작

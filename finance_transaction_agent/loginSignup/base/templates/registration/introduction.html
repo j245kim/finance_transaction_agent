@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Financial Advisor | Home</title>
+    <!-- Page Title -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/test.css' %}" />
+    <!-- Change required:href -->
+    <!-- 폰트 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- 폰트 끝 -->
+    <script src="script.js"></script>
+  </head>
+  <body>
+    <!-- 본문 body -->
+    <header class="header">
+      <!-- Page 상단 header -->
+      <a class="logo" href="{% url 'base:home' %}">Financial Advisor</a>
+      <!-- Change required:href -->
+      <button class="logout-button">Log Out</button>
+    </header>
+    <!-- Page 상단 header 종료 -->
+    <div class="container">
+      <nav class="sidebar">
+        <!-- 왼쪽 사이드바 -->
+        <h2 class="nav-title">기능</h2>
+        <ul>
+          <li>
+            <a href="{% url 'base:introduction' %}">Finanacial Advisor란?</a>
+          </li>
+          <!-- Financial Advisor 기능 소개 page로 연결 -->
+          <li><a href="{% url 'base:manual' %}">어떤 기능이 있나요?</a></li>
+          <!-- 사용설명서 page로 연결 -->
+        </ul>
+        <h2 class="nav-title">분석</h2>
+        <ul>
+          <li><a href="#">투자 성향 분석</a></li>
+          <!-- 투자 성향 분석 기능 page로 연결 -->
+          <li><a href="#">유사 성향 통계</a></li>
+          <!-- 성향 통계 page로 연결 -->
+        </ul>
+        <h2 class="nav-title">설정</h2>
+        <ul>
+          <!-- TTS 사용 가능 Pop-up 표시 -->
+          <li>
+            <a href="#" onclick="showPopup()">TTS 사용</a>
+            <!-- Pop-up -->
+            <div class="overlay" id="overlay"></div>
+            <!-- Pop-up Overlay -->
+            <div class="popup" id="popup">
+              <p>TTS 기능을 사용하시겠습니까?</p>
+              <button class="yes-button" onclick="enableTTS()">TTS 사용</button>
+              <button class="no-button" onclick="disableTTS()">
+                TTS 사용안함
+              </button>
+            </div>
+            <!-- TTS 실행 Pop-up -->
+            <script>
+              function showPopup() {
+                document.getElementById("popup").style.display = "block";
+                document.getElementById("overlay").style.display = "block";
+              }
+              function closePopup() {
+                document.getElementById("popup").style.display = "none";
+                document.getElementById("overlay").style.display = "none";
+              }
+              function enableTTS() {
+                alert("TTS 기능이 활성화되었습니다.");
+                speakText("TTS 기능이 활성화됐습니다");
+                closePopup();
+                /* 진우한테 설정 저장해달라고 하기 */
+              }
+              function disableTTS() {
+                alert("TTS 기능이 비활성화되었습니다.");
+                closePopup();
+                /* 진우한테 설정 저장해달라고 하기 */
+              }
+              function speakText(text) {
+                if ("speechSynthesis" in window) {
+                  let utterance = new SpeechSynthesisUtterance(text);
+                  utterance.lang = "ko-KR"; /* 한국어 설정 */
+                  speechSynthesis.speak(utterance);
+                } else {
+                  alert("현재 브라우저는 TTS를 지원하지 않습니다.");
+                }
+              }
+            </script>
+          </li>
+          <!-- TTS 사용 가능 Pop-up 끝 -->
+          <li><a href="#">개인정보 수정</a></li>
+          <!-- 개인정보 수정/회원 탈퇴 가능 page로 연결 -->
+        </ul>
+      </nav>
+
+      <!-- 메인 컨텐츠 영역 -->
+      <main class="content">
+        <div class="landingcard">
+          <h1>Financial Advisor</h1>
+          <section class="intro">
+            <p class="sub-text">
+              Financial Advisor는 AI 기반 투자 컨설팅 서비스입니다.
+            </p>
+          </section>
+          <section class="intro">
+            <p class="sub-text">
+              사용자의 투자 성향과 목표에 맞춰 최적화된 투자 전략을 제시하고,
+              다양한 분석 도구를 통해 투자 의견을 전달합니다.
+            </p>
+          </section>
+          <h1>Functions</h1>
+          <section class="intro">
+            <!-- 나쁜거 배웠네 -->
+            <p class="sub-text">
+              여러 언어를 지원합니다.<br />
+              원하는 언어로 채팅해보세요.
+            </p>
+          </section>
+          <section class="intro">
+            <!-- 나쁜거 배웠네 -->
+            <p class="sub-text">
+              여러 기기 또한 지원합니다.<br />
+              최신 HTML 규격을 지원하여 원하는 플랫폼에서 자유롭게 접속하세요.
+            </p>
+          </section>
+          <h1>Price</h1>
+          <section class="intro">
+            <!-- 똥 그만 던져 -->
+            <h1>ㅇㄹㅇㄹ</h1>
+            <p class="sub-text">
+              사용자의 투자 성향과 목표에 맞춰 최적화된 투자 전략을 제시하고,
+              다양한 분석 도구를 통해 투자 의견을 전달합니다.
+            </p>
+          </section>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
