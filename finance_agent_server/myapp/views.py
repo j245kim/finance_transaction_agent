@@ -1,27 +1,40 @@
 import os
 import json
 from pathlib import Path
+from dotenv import load_dotenv
 
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 
+# RAG 사용을 위한 라이브러리리
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain_openai import ChatOpenAI
 from langchain.vectorstores import FAISS
 from langchain.text_splitter import CharacterTextSplitter
+from langchain_core.documents import Document
+import re
 
+# retriever 사용을 위한 라이브러리
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_core.prompts import ChatPromptTemplate
 
-from dotenv import load_dotenv
-from llama_cpp import Llama
-from transformers import AutoTokenizer, PreTrainedTokenizer
-
+# mongoDB 사용을 위한 라이브러리
 from pymongo import MongoClient
 from datetime import datetime, timedelta
 
 from django.shortcuts import render
-from django.http import JsonResponse, FileResponse
+from django.http import JsonResponse, FileResponse, HttpResponse
 
 from pymongo import MongoClient
+
+# stt 구현하는 라이브러리
+from django.views.decorators.csrf import csrf_exempt  # CSRF 보안 토큰 무시
+from .stt import speech_to_text 
+import whisper
+import io
+
+# tts 구현하는 라이브러리
+from gtts import gTTS
 
 cluster = MongoClient(os.environ.get("mongo")) # 클러스터 
 db = cluster['userinfo'] # 유저 정보
@@ -86,31 +99,35 @@ def chatgpt(req, user_id ,input_string):
 
     messages.append({"role": "user", "content": input_string})  # 새 메시지 추가
 
-    prompt = PromptTemplate.from_template(
-        '''
-        당신은 투자어드바이저입니다. 
-        사용자의 질문을 받아들이고, 투자에 관련된 질문이 있는지 확인하세요.
-        classification_invest() 함수는 질문을 string으로 받고, 관계가 있다면 True를 반환하고, 그렇지 않다면 False를 반환합니다.
-        classification_invest() 함수를 사용하여 사용자의 질문이 투자와 관련이 있는지 확인하고,
-        관계가 있다면 투자 성향 체크를 진행하고
-        관계가 없다면 질문에 대한 대답을 해주세요.
+    if classification_invest(input_string) == 'False':
+        if classification_market_situation(input_string) == 'False':
+            # 프롬포트 조정 가능합니다.
+            prompt = PromptTemplate.from_template(
+                '''
+                당신은 투자어드바이저입니다. 
+                질문에 대한 답변을 해주세요. 
+                대화 기록 = {message} 질문 = {content}
+                ''')
+        
 
-        대화 기록 = {message} 질문 = {content}
-        ''')
-    # 페르소나 조정 가능합니다.
+            chain = prompt | llm
 
-    chain = prompt | llm
+            answer = chain.invoke(input={"message": messages, "content": input_string})
 
-    answer = chain.invoke(input={"message": messages, "content": input_string})
+            messages.append({"role": "assistant", "content": answer.content})
 
-    messages.append({"role": "assistant", "content": answer.content})
+            conversations.update_one(
+                {"user_id": user_id},
+                {"$set": {"messages": messages}}
+            )
+            
+            return JsonResponse({'content':answer.content})
+        
+        else:
+            # RAG 사용 >> 함수로 불러올 예정입니다.
+            answer = invest_search_rag(input_string)
 
-    conversations.update_one(
-        {"user_id": user_id},
-        {"$set": {"messages": messages}}
-    )
-    
-    return JsonResponse({'content':answer.content})
+            return JsonResponse({'content':answer})
 
 def classification_finance(input_string):
 # 금융 관련 질문 여부 확인
@@ -118,11 +135,12 @@ def classification_finance(input_string):
     api_key = os.getenv('OPENAI_API_KEY_sesac')
     llm = ChatOpenAI(
         model_name='gpt-4o-mini',
-        api_key=api_key
+        api_key=api_key,
+        temperature = 0
     )
 
     prompt = PromptTemplate.from_template('''
-    {message}
+    message : '{message}'
 
     금융과 무관한 내용을 금융과 억지로 연결 짓지 마세요. 
     금융(예: 주식, 투자, 은행, 대출, 경제 등)과 직접 관련이 있는 경우에만 "True"를 반환하고, 그렇지 않다면 "False"를 반환하세요.
@@ -142,12 +160,13 @@ def classification_invest(input_string):
     api_key = os.getenv('OPENAI_API_KEY_sesac')
     llm = ChatOpenAI(
         model_name='gpt-4o-mini',
-        api_key=api_key
+        api_key=api_key,
+        temperature = 0
     )
 
     prompt = PromptTemplate.from_template(
         '''
-        "{message}"
+        message : "{message}"
         이 문장을 말한 사람이 실제로 투자를 할 의도가 있는지 여부를 판단하세요.
         투자와 관련된 내용이 있는 경우 "True"를 반환하고, 그렇지 않은 경우 "False"를 반환하세요.
         ''')
@@ -158,71 +177,145 @@ def classification_invest(input_string):
 
     return answer.content
 
-def invest_search_rag(request, input_string):
+def classification_market_situation(input_string):
+    # 시장 현황 질문 여부 확인
+    load_dotenv()
+    api_key = os.getenv('OPENAI_API_KEY_sesac')
+    llm = ChatOpenAI(
+        model_name='gpt-4o-mini',
+        api_key=api_key,
+        temperature = 0
+    )
+
+    prompt = PromptTemplate.from_template(
+        '''
+        message : "{message}"
+        이 문장을 말한 사람이 시장 현황에 대해 물어보고 있는지 여부를 판단하세요.
+        시장 현황과 관련된 내용이 있는 경우 "True"를 반환하고, 그렇지 않은 경우 "False"를 반환하세요.
+        ''')
+    # 프롬포트 조정 가능합니다. (페르소나)
+    chain = prompt | llm
+
+    answer = chain.invoke({'message': input_string})
+
+    return answer.content
+
+def invest_search_rag(input_string):
     # RAG 제작
 
     load_dotenv()
-    api_key = os.getenv('OPEN_API_KEY_sesac')
+    api_key = os.getenv('OPENAI_API_KEY_sesac')
     
     llm = ChatOpenAI(
         model_name='gpt-4o',
         api_key=api_key
     )
 
-    prompt = PromptTemplate.from_template('')
+    # mongoDB에서 데이터를 가져오기
+    cluster = MongoClient(os.environ.get("mongo")) # 클러스터 
+    db = cluster['Document'] # 유저 정보
+    newsdata = db["newsdata"] # 내가 지정한 컬렉션 이름
+
+    newsdatas = newsdata.find().to_list()
+
+    docs = [Document(page_content = news_info['news_content'],metadata = {
+                                                                            'title': news_info['news_title'],
+                                                                            'first_time': news_info['news_first_upload_time'],
+                                                                            'last_time':news_info['news_last_upload_time'],
+                                                                            'subcategory':news_info['news_category'],
+                                                                            'major category':news_info['note'],
+                                                                            'website':news_info['news_website'],
+                                                                            'url':news_info['news_url'],
+                                                                            'author':news_info['news_author'],
+                                                                            })
+        for news_info in newsdatas]
+
+
+    # 위와 같은 이유로 전처리하는 것을 찾아보겠음.
+    
+    # 찾아보니까 임베딩 모델이 openaiembeddings를 사용하고 있어서 토큰화가 필요없다. 자동으로 하긴하는데, 전처리를 해주는 것은 좋아보인다.
+    # 전처리를 하고 임베딩 모델에 넣어서 faiss에 저장해보자.
+    
+    # 청크로 나누기 
+    splitter = CharacterTextSplitter(chunk_size = 50, chunk_overlap = 5)
+    split_texts = splitter.split_documents(docs)
+    embeddings = OpenAIEmbeddings(openai_api_key=api_key)
+
+    # faiss에 저장
+    if not os.path.isfile(rf'{Path(__file__).parent}/vectorDB/NewsData.faiss') :
+        vector_store = FAISS.from_documents(split_texts, embeddings)
+    
+        vector_store.save_local(Path(__file__).parent/'vectorDB',index_name = 'NewsData')
+
+    vector_store = FAISS.load_local(Path(__file__).parent/'vectorDB',embeddings,allow_dangerous_deserialization=True,index_name = 'NewsData')
+
+    # retriever 생성
+    # 유사도 검색을 코사인 유사도가 아닌 다른 방법으로 하고 싶다면 as.retriever의 인자를 바꾸면 된다.
+    retriever = vector_store.as_retriever()
+
+    system_prompt = ''' 
+    Use the given context to answer the question. If you don't know the answer, say you don't know.  
+    "If you don't know the answer, say you don't know. "
+    "Use three sentence maximum and keep the answer concise. "
+    "Context: {context}"
+      '''
     #페르소나 조정 가능합니다.
-
-    client = MongoClient('')
-    # Atlas 사용 시에 연결 주소 입력
-
-    db = client['']
-    # 데이터베이스 이름 입력
-
-    collection = db['']
-    # 컬렉션 이름 입력  
-
-    data = collection.find()
-
-    chain = prompt | llm
-
-    answer = chain.invoke({'message': input_string})
-
-    return JsonResponse({'report':answer.content})
-
-def make_report(requeset, input_string):
-
-    load_dotenv()
-    api_key = os.getenv('OPEN_API_KEY_sesac')
-
-    # retriever = 
-    llm = ChatOpenAI(
-        model_name='gpt-4o-mini',
-        retriever = retriever,
-        api_key=api_key
+    
+    prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", system_prompt),
+        ("human", "{input}"),
+    ]
     )
 
-    prompt = PromptTemplate.from_template('')
+    # llm과 prompt 연결결
+    question_answer_chain = create_stuff_documents_chain(llm, prompt)
 
-    chain = prompt | llm
+    # 리트리버 연결결
+    chain = create_retrieval_chain(retriever, question_answer_chain)
 
-    answer = chain.invoke({'message': input_string})
+    chain.invoke({"input": input_string})
 
-    return JsonResponse({'report':answer.content})
-
-def RUB(request, input_string):
-
-    # load_dotenv()
-    # api_key = os.getenv('OPEN_API_KEY_sesac')
-    # llm = ChatOpenAI(
-    #     model_name='gpt-4o-mini',
-    #     api_key=api_key
-    # )
-    
+    answer = chain.invoke({"input": input_string})
+    return answer['answer']
 
 
-    return JsonResponse({})
+
+
+
  
+def stt_api(request):
+    # Whisper 모델 로드
+    model = whisper.load_model("tiny")
 
+    if request.method == "POST" and request.FILES.get("audio"):
+        audio_file = request.FILES["audio"]
 
+        # 파일 저장 없이 메모리에서 바로 변환
+        audio_bytes = audio_file.read()
+        audio_stream = io.BytesIO(audio_bytes)
+        
+        # Whisper 변환 실행
+        result = model.transcribe(audio_stream, language="ko")  # 한국어 지정
+        
+        return JsonResponse({"text": result["text"]})
+    
+    return JsonResponse({"error": "음성 파일을 업로드하세요."}, status=400)
+
+def tts_api(request, input_string):
+    # 입력 텍스트가 비어 있는지 확인
+    if not input_string.strip():
+        return JsonResponse({"error": "텍스트가 비어 있습니다."}, status=400)
+
+    # gTTS를 사용하여 음성 변환
+    tts = gTTS(text=input_string, lang="ko")
+    audio_stream = io.BytesIO()
+    tts.write_to_fp(audio_stream)
+
+    # 오디오 스트림을 HTTP 응답으로 반환
+    audio_stream.seek(0)
+    response = HttpResponse(audio_stream.read(), content_type="audio/mpeg")
+    response["Content-Disposition"] = 'inline; filename="tts_audio.mp3"'
+    return response
 
 

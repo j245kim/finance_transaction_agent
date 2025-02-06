@@ -24,4 +24,6 @@ urlpatterns = [
     path("chatgpt/<str:user_id>/<str:input_string>", views.chatgpt),
     path('make_report/<str:input_string>',views.make_report),
     path('RUB/<str:input_string>',views.RUB),
+    path("stt/", views.stt_api),
+    path("tts/<str:input_string>/", views.tts_api)
 ]
