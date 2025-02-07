@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Financial Advisor | Home</title>
     <!-- Page Title -->
-    <link rel="stylesheet" href="test.css" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/test.css' %}" />
     <!-- Change required:href -->
     <!-- 폰트 -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -21,7 +22,7 @@
     <!-- 본문 body -->
     <header class="header">
       <!-- Page 상단 header -->
-      <a class="logo" href="test.html">Financial Advisor</a>
+      <a class="logo" href="{% url 'base:home' %}">Financial Advisor</a>
       <!-- Change required:href -->
       <button class="logout-button">Log Out</button>
     </header>
@@ -31,9 +32,11 @@
         <!-- 왼쪽 사이드바 -->
         <h2 class="nav-title">기능</h2>
         <ul>
-          <li><a href="introduction.html">Finanacial Advisor란?</a></li>
+          <li>
+            <a href="{% url 'base:introduction' %}">Finanacial Advisor란?</a>
+          </li>
           <!-- Financial Advisor 기능 소개 page로 연결 -->
-          <li><a href="manual.html">어떤 기능이 있나요?</a></li>
+          <li><a href="{% url 'base:manual' %}">어떤 기능이 있나요?</a></li>
           <!-- 사용설명서 page로 연결 -->
         </ul>
         <h2 class="nav-title">분석</h2>
