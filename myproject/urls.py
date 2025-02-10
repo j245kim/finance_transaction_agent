@@ -21,6 +21,7 @@ from myapp import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("", views.home),
     path('images/<str:image_name>', views.load_images),
     path('bllossom/<str:message>', views.bllossom),
     path("chatgpt/<str:message>", views.chatgpt),
