@@ -1,32 +1,35 @@
 import os
 
 from dotenv import load_dotenv
-
-
-load_dotenv()
-os.environ['OPENAI_API_KEY'] = os.getenv('OPENAI_API_KEY')
-
-
-from langchain_core.prompts import PromptTemplate
-
-# template 정의
-template = "{country}의 수도는 어디인가요?"
-
-# from_template 메소드를 이용하여 PromptTemplate 객체 생성
-prompt_template = PromptTemplate.from_template(template)
-prompt_template
-
-# prompt 생성
-prompt = prompt_template.format(country="대한민국")
-prompt
-
-# prompt 생성
-prompt = prompt_template.format(country="미국")
-prompt
-
 from langchain_openai import ChatOpenAI
 
-model = ChatOpenAI(
-    model="gpt-4o-mini",
-    temperature=0.1,
+load_dotenv()
+
+api_key = os.getenv('OPENAI_API_KEY')
+
+from langchain_core.prompts import FewShotPromptTemplate, PromptTemplate
+from langchain_core.example_selectors.length_based import LengthBasedExampleSelector
+
+examples = [
+    {"food": "Kimchi", "category": "Korean food"},
+    {"food": "Chocolate", "category": "dessert"},
+    {"food": "Pasta", "category": "Italian food"},
+    {"food": "Americano", "category": "Coffee"},
+]
+
+example_prompt = PromptTemplate(
+    template="Food:{food} Category:{category}", input_variables=["food", "category"]
 )
+example_selector = LengthBasedExampleSelector(
+    examples=examples, example_prompt=example_prompt, max_length=30
+)
+dynamic_prompt = FewShotPromptTemplate(
+    example_selector=example_selector,
+    example_prompt=example_prompt,
+    prefix="What is the category of this food?",
+    suffix="Food: {food}",
+    input_variables=["food"],
+)
+
+output = dynamic_prompt.format(food="Korean BBQ")
+print(len(output.split()), output)
