@@ -1,9 +1,9 @@
 # Made by
-https://github.com/j245kim **Full Stack** 
-https://github.com/ChoJunHee-user **Back-end** 
-https://github.com/happy-dragonman **Project Manager**
-https://github.com/privatepeople **Back-end** 
-https://github.com/Pseudo-Kamita **Front-end**
+https://github.com/j245kim **Full Stack** <br> <br>
+https://github.com/ChoJunHee-user **Back-end** <br> <br>
+https://github.com/happy-dragonman **Project Manager** <br> <br>
+https://github.com/privatepeople **Back-end** <br> <br>
+https://github.com/Pseudo-Kamita **Front-end** <br>
 
 # STFO Financial Advisor 사용법
 
