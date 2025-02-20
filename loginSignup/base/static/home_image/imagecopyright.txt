@@ -1,0 +1,28 @@
+Flaticon copyright<
+
+sidebar_information
+<a href="https://www.flaticon.com/free-icons/info" title="info icons">Info icons created by Freepik - Flaticon</a>
+
+sidebar_function
+<a href="https://www.flaticon.com/free-icons/information" title="information icons">Information icons created by Freepik - Flaticon</a>
+
+sidebar_logout
+<a href="https://www.flaticon.com/free-icons/logout" title="logout icons">Logout icons created by Pixel perfect - Flaticon</a>
+
+texttospeech
+<a href="https://www.flaticon.com/free-icons/text-to-speech" title="text to speech icons">Text to speech icons created by JessiGue - Flaticon</a>
+
+mic
+<a href="https://www.flaticon.com/free-icons/mic" title="mic icons">Mic icons created by Kiranshastry - Flaticon</a>
+
+sidebar_tendency
+<a href="https://www.flaticon.com/free-icons/tendency" title="tendency icons">Tendency icons created by Vectors Tank - Flaticon</a>
+
+sidebar_statisticchart
+<a href="https://www.flaticon.com/free-icons/statistics" title="statistics icons">Statistics icons created by srip - Flaticon</a>
+
+sidebar_useredit
+<a href="https://www.flaticon.com/free-icons/user" title="user icons">User icons created by Freepik - Flaticon</a>
+
+mic off
+<a href="https://www.flaticon.com/free-icons/mic" title="mic icons">Mic icons created by Hight Quality Icons - Flaticon</a>

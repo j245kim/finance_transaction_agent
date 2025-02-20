@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>설문조사</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/survey.css' %}" />
+  </head>
+  <body>
+    <form action="">
+      <div class="main">
+        <h1>금융설문 조사</h1>
+        <hr />
+        <p>
+          이 설문조사는 고객님의 투자성향을 조사하기 위한 질분입니다. <br> 여기 기록되는 정보는 절대로 제3자와 공유하지 않습니다.
+        </p>
+        <hr />
+        <h4 style="color: red;">* 모든 질문에 답해주세요!</h4>
+      </div>
+      
+      <!-- Multiple Choice -->
+      <!-- 첫 번째 문제 -->
+    <div class="question-container" id="question1">
+      <div class="question">현재 고객님의 나이는 어떻게 되십니까?</div>
+      <div class="options">
+        <label>
+          <input type="radio" name="연령구분" value="18세 미만" id="under18"/> 18세 미만
+        </label>
+        <label>
+          <input type="radio" name="연령구분" value="18세 이상" /> 18세 이상
+          65세 미만
+        </label>
+        <label>
+          <input type="radio" name="연령구분" value="65세 이상" /> 65세 이상
+        </label>
+      </div>
+    </div>
+
+    <!-- 두 번째 문제 -->
+    <div class="question-container" id="question2">
+      <div class="question">
+        향후 고객님의 연간수입원에 대한 예상은 어떻게 되십니까?
+      </div>
+      <div class="options">
+        <label>
+          <input type="radio" name="소득상태" value="없음" point="2" /> 현재
+          일정한 수입이 없으며, 연금이 주 수입원임
+        </label>
+        <label>
+          <input type="radio" name="소득상태" value="불안정" point="1" /> 현재
+          일정한 수입이 발생하고 있으나, 향후 감소하거나 불안정할 것으로 예상
+        </label>
+        <label>
+          <input type="radio" name="소득상태" value="안정정" point="0" /> 현재
+          일정한 수입이 발생하고 있으며, 향후 현재 수준을 유지하거나 증가할
+          것으로 예상
+        </label>
+      </div>
+    </div>
+
+    <!-- 세 번째 문제 -->
+    <div class="question-container" id="question3">
+      <div class="question">
+        기존에 보유하고 계신 총자산 대비 금융자산의 비중은 어느 정도입니까?:
+      </div>
+      <div class="options">
+        <label>
+          <input type="radio" name="금융자산의 비중" value="5%" point="1" /> 5%
+          이하
+        </label>
+        <label>
+          <input type="radio" name="금융자산의 비중" value="10%" point="2" />
+          10% 이하
+        </label>
+        <label>
+          <input type="radio" name="금융자산의 비중" value="20%" point="3" />
+          20% 이하
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="금융자산의 비중"
+            value="30%이하"
+            point="4"
+          />
+          30% 이하
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="금융자산의 비중"
+            value="30%초과"
+            point="5"
+          />
+          30% 초과
+        </label>
+      </div>
+    </div>
+
+    <!-- 네 번째 문제 -->
+    <div class="question-container" id="question4">
+      <div class="question">투자해 보신 경험이 있는 것을 선택해 주십시오.</div>
+      <div class="options">
+        <p>원금 비보장형 ELS/DLS/EL, ELW, 선물/옵션, 주식신용거래</p>
+        <label>
+          <input
+            type="radio"
+            name="투자경험1"
+            value="원금 비보장형 1년이하"
+            point="3"
+          />
+          1년 이하
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="투자경험1"
+            value="원금 비보장형 1~3년"
+            point="4"
+          />
+          1~3년
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="투자경험1"
+            value="원금 비보장형 3년이상"
+            point="5"
+          />
+          3년 이상
+        </label>
+        <p>
+          주식, 주식형펀드, 해외펀드, 원금지급형ELS/DLS/ELF,
+          투자자문/일임(Wrap), 외화증권
+        </p>
+        <label>
+          <input
+            type="radio"
+            name="투자경험2"
+            value="주식 1년 이하"
+            point="2"
+          />
+          1년 이하
+        </label>
+        <label>
+          <input type="radio" name="투자경험2" value="주식 1~3년 " point="3" />
+          1~3년
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="투자경험2"
+            value="주식 3년 이상"
+            point="4"
+          />
+          3년 이상
+        </label>
+        <p>채권/혼합평 펀드, 신탁, 채권</p>
+        <label>
+          <input
+            type="radio"
+            name="투자경험3"
+            value="채권 1년 이하"
+            point="0"
+          />
+          1년 이하
+        </label>
+        <label>
+          <input type="radio" name="투자경험3" value="채권 1~3년" point="1" />
+          1~3년
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="투자경험3"
+            value="체권 3년 이상"
+            point="2"
+          />
+          3년 이상
+        </label>
+      </div>
+    </div>
+
+    <!-- 다섯 번째 문제 -->
+
+    <div class="question-container" id="question5">
+      <div class="question">
+        고객님은 다음 중 어떤 목적으로 투자하는 편입니까?
+      </div>
+      <div class="options">
+        <label
+          ><input type="radio" name="투자목적" value="원금보존" point="4" />
+          원금보존 가능성을 포기하기 어렵기 때문에 예적금 수익률 보다 1~2%정도만
+          더 나오면 됨 (투자수익을 고려하나 원금보존이 더 중요)
+        </label>
+        <label
+          ><input type="radio" name="투자목적" value="표준준" point="2" />
+          예적금 수익률보다 3~5%정도 기대할 수 있다면 원금보존 가능성은 좀
+          포기할 수 있음 (원금보존을 고려하나 투자수익이 더 중요)
+        </label>
+        <label
+          ><input type="radio" name="투자목적" value="투자수익익" point="1" />
+          고수익을 기대하고 있으며, 원금손실 가능성은 감수할 수 있음 (손실
+          위험이 있더라도 투자수익이 더 중요)
+        </label>
+      </div>
+    </div>
+
+    <!-- 여섯섯 번째 문제 -->
+    <div class="question-container" id="question6">
+      <div class="question">
+        고객님께서 감내하실 수 있는 투자수익 및 위험수준은 어느정도 입니까?
+      </div>
+      <div class="options">
+        <label
+          ><input
+            type="radio"
+            name="투자위험 감수능력"
+            value="투자원금보존"
+            point="0"
+          />
+          무슨 일이 있어도 투자 원금은 보전되어야 한다.</label
+        >
+        <label
+          ><input
+            type="radio"
+            name="투자위험 감수능력"
+            value="10%감수"
+            point="1"
+          />
+          ±10% 정도만 변동하더라도, 매도하고 빠져나와야 안심이 될 것 같다
+        </label>
+        <label
+          ><input
+            type="radio"
+            name="투자위험 감수능력"
+            value="20퍼감수"
+            point="3"
+          />
+          ±20% 정도까지는 당황하지 않고 기다리거나 상황에 따라서 추가매수 등
+          대응도 문제없다
+        </label>
+        <label
+          ><input
+            type="radio"
+            name="투자위험 감수능력"
+            value="30퍼감수"
+            point="4"
+          />
+          ±30% 정도 변동은 버틸 수 있으며, 때때로 그 이상의 변동을 기대하여
+          적극적으로 운용하려고 한다
+        </label>
+      </div>
+    </div>
+
+    <!-- 일곱곱 번째 문제 -->
+    <div class="question-container" id="question7">
+      <div class="question">
+        향후 고객님의 연간수입원에 대한 예상은 어떻게 되십니까?
+      </div>
+      <div class="options">
+        <label
+          ><input
+            type="radio"
+            name="금융상품 지식수준"
+            value="없음"
+            point="1"
+          />
+
+          예적금 외에 다른 금융투자상품에 투자해본적이 없음</label
+        >
+        <label
+          ><input
+            type="radio"
+            name="금융상품 지식수준"
+            value="낮음"
+            point="2"
+          />주식, 채권, 펀드같은 일반적인 상품 정도는 설명만 좀 들으면, 투자할지
+          여부를 결정할 수 있음
+        </label>
+        <label
+          ><input
+            type="radio"
+            name="금융상품 지식수준"
+            value="보통"
+            point="3"
+          />
+          주식, 채권, 펀드같은 일반적인 상품은 설명을 듣지 않아도 잘 알고
+          있으며, 투자 판단을 스스로 내릴 수 있음
+        </label>
+        <label
+          ><input
+            type="radio"
+            name="금융상품 지식수준"
+            value="높음"
+            point="3"
+          />
+          파생상품을 포함한 대부분의 금융투자상품에 대해서 충분히 잘 알고
+          있음</label
+        >
+      </div>
+    </div>
+
+    <!-- 여덟 번째 문제 -->
+    <div class="question-container" id="question8">
+      <div class="question">
+        파생상품, 파생결합증권 및 파생상품펀드에 투자한 경험은 얼마나 되십니까?
+      </div>
+      <div class="options">
+        <label
+          ><input
+            type="radio"
+            name="파생상품 투자경험"
+            value="없음"
+            point="2"
+          />
+          1년 미만(경험없음)
+        </label>
+        <label
+          ><input
+            type="radio"
+            name="파생상품 투자경험"
+            value="보통"
+            point="2"
+          />
+          1년 이상 3년 미만
+        </label>
+        <label
+          ><input
+            type="radio"
+            name="파생상품 투자경험"
+            value="높음"
+            point="1"
+          />
+          3년 이상
+        </label>
+      </div>
+    </div>
+
+    <!-- 아홉 번째 문제 -->
+    <div class="question-container" id="question9">
+      <div class="question">
+        고령투자자,주부,은퇴자 등 금융투자상품에 대한 이해가 부족하거나
+        투자경험이 없는 투자자의 경우 「금융소비자 보호 모범규준」에 따른
+        금융취약 계층으로 금융소비자의 불이익 사항을 다른 정보보다 우선하여 설명
+        받으실 수 있습니다. 해당 항목에 체크하여 주시기 바랍니다.
+      </div>
+      <div class="options">
+        <label
+          ><input type="radio" name="금융취약자 정보" value="없음" point="2" />
+          금융투자상품에 대한 이해가 부족하거나 투자경험이 없음
+        </label>
+        <label
+          ><input type="radio" name="금융취약자 정보" value="있음" point="0" />
+          해당사항 없음
+        </label>
+      </div>
+    </div>
+
+      <p class="rule" style = "color:red;">정확한 성향파악을 위해 성실하게 답해주세요.</p>
+      <p class="policy">
+        이 설문지는 STFO의 설문지로 불법도용을 금지합니다.
+        <a href="{% url 'base:terms' %}">이용약관</a>
+        <a href="{% url 'base:copyright' %}">저작권</a>
+        <h1 class="web" style="color: grey; font-weight: 550; width: 50vw;">금융성향 조사</h1>
+      </p>
+    </form>
+    
+    <button class="save-button" onclick="calculateGrade()">계산</button>
+
+    <div class="saved-choice" id="result"></div>
+
+    <div class="result">
+      <!-- <p>테스트 결과:</p> -->
+      <!-- <p id="result-range">결과: 아직 선택하지 않음</p> -->
+    </div>
+
+    <script>
+
+      const ageWarn = document.querySelectorAll('input[name="연령구분"]');
+  
+      ageWarn.forEach((radio) => {
+        radio.addEventListener("change", function () {
+          if (this.value === "18세 미만") {
+            alert("경고!");
+          }
+        });
+      });
+      document.getElementById("under18").addEventListener("change", function () {
+        if (this.checked) {
+          alert("부모님의 동의를 받아야 합니다");
+  
+          // 0.1초(100ms) 후 체크 해제
+          setTimeout(() => {
+            this.checked = false;
+          }, 100);
+        }
+      });
+    </script>
+
+<script>
+  async function calculateGrade() {
+    let totalScore = 0;
+    let allQuestionsAnswered = true; // 모든 질문이 답변되었는지 확인하는 변수
+
+    // 첫 번째 문제
+    const question1Answer = document.querySelector(
+      'input[name="연령구분"]:checked'
+    );
+    if (question1Answer) {
+      if (question1Answer.value === "18세 미만")
+        alert("부모님의 동의를 받으세요!");
+      else if (question1Answer.value === "18세 이상") totalScore += 0;
+      else if (question1Answer.value === "65세 이상") totalScore += 0;
+    } else {
+      allQuestionsAnswered = false; // 첫 번째 질문이 답변되지 않으면
+    }
+
+    // 두 번째 문제
+    const question2Answer = document.querySelector(
+      'input[name="소득상태"]:checked'
+    );
+    if (question2Answer) {
+      totalScore += parseInt(question2Answer.getAttribute("point"));
+    } else {
+      allQuestionsAnswered = false;
+    }
+
+    // 세 번째 문제
+    const question3Answer = document.querySelector(
+      'input[name="금융자산의 비중"]:checked'
+    );
+    if (question3Answer) {
+      totalScore += parseInt(question3Answer.getAttribute("point"));
+    } else {
+      allQuestionsAnswered = false;
+    }
+
+    // 네 번째 문제
+    const question4Answers = document.querySelectorAll(
+      'input[name="투자경험1"]:checked, input[name="투자경험2"]:checked, input[name="투자경험3"]:checked'
+    );
+    if (question4Answers.length > 0) {
+      question4Answers.forEach((answer) => {
+        totalScore += parseInt(answer.getAttribute("point"));
+      });
+    } else {
+      allQuestionsAnswered = false;
+    }
+
+    // 다섯 번째 문제
+    const question5Answers = document.querySelectorAll(
+      'input[name="투자목적"]:checked'
+    );
+    if (question5Answers.length > 0) {
+      question5Answers.forEach(() => {
+        totalScore += 1;
+      });
+    } else {
+      allQuestionsAnswered = false;
+    }
+
+    const question6Answer = document.querySelector(
+      'input[name="투자위험 감수능력"]:checked'
+    );
+    if (question6Answer) {
+      totalScore += parseInt(question6Answer.getAttribute("point"));
+    } else {
+      allQuestionsAnswered = false;
+    }
+
+    const question7Answer = document.querySelector(
+      'input[name="금융상품 지식수준"]:checked'
+    );
+    if (question7Answer) {
+      totalScore += parseInt(question7Answer.getAttribute("point"));
+    } else {
+      allQuestionsAnswered = false;
+    }
+
+    const question8Answer = document.querySelector(
+      'input[name="파생상품 투자경험"]:checked'
+    );
+    if (question8Answer) {
+      totalScore += parseInt(question8Answer.getAttribute("point"));
+    } else {
+      allQuestionsAnswered = false;
+    }
+
+    const question9Answer = document.querySelector(
+      'input[name="금융취약자 정보"]:checked'
+    );
+    if (question9Answer) {
+      totalScore += parseInt(question9Answer.getAttribute("point"));
+    } else {
+      allQuestionsAnswered = false;
+    }
+
+    // 질문을 모두 선택하지 않았다면 경고 메시지 표시하고 종료
+    if (!allQuestionsAnswered) {
+      alert("모든 질문에 답변해주세요.");
+      return; // 결과 업데이트하지 않음
+    }
+
+    // 결과를 화면에 업데이트
+    // document.getElementById("total-score").textContent = totalScore;
+
+    let resultRange = "";
+
+    // 점수 범위에 따른 투자 성향 출력
+    // 나중에 없어질 것
+    if (totalScore >= 26) {
+      resultRange = "위험 선호형";
+    } else if (totalScore >= 21 && totalScore <= 25) {
+      resultRange = "적극 투자형";
+    } else if (totalScore >= 16 && totalScore <= 20) {
+      resultRange = "위험 중립형";
+    } else if (totalScore >= 11 && totalScore <= 15) {
+      resultRange = "안정 중립형";
+    } else {
+      resultRange = "안정형";
+    }
+
+    // document.getElementById("result-range").textContent =
+    //   "결과: " + resultRange;
+
+    // 서버로 점수와 사용자 정보 전송
+    try {
+      const username = "{{ user.get_username }}";  // 서버에서 사용자 정보를 가져오는 코드
+      const apiEndpoint = `http://127.0.0.1:8001/measure_investment_propensity/${username}/${totalScore}/`;
+      const response = await fetch(apiEndpoint);
+
+      if (confirm(`당신은 ${resultRange}입니다. 확인을 누르면 홈페이지로 이동합니다. 원치 않으면 취소를 눌려주세요.`)) {
+        location.href="{% url 'base:home' %}"; 
+      }
+      
+      if (response.ok) {
+        const data = await response.json();
+        document.getElementById("result-range").textContent = "결과: " + data.content;
+        
+      } else {
+        document.getElementById("result-range").textContent = "서버에서 오류가 발생했습니다.";
+      }
+    } catch (error) {
+      // console.error("Error fetching investment propensity:", error);
+      // document.getElementById("result-range").textContent = "서버와의 연결 오류가 발생했습니다."; 
+    }
+  }
+</script>
+
+  </body>
+</html>

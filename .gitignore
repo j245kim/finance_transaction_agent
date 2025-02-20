@@ -1,0 +1,4 @@
+*.env
+loginSignup/base/forms.py
+
+finance_agent_server/myapp/vecterDB/
