@@ -1,3 +1,10 @@
+# Made by
+https://github.com/j245kim **Full Stack** 
+https://github.com/ChoJunHee-user **Back-end** 
+https://github.com/happy-dragonman **Project Manager**
+https://github.com/privatepeople **Back-end** 
+https://github.com/Pseudo-Kamita **Front-end**
+
 # STFO Financial Advisor 사용법
 
 당신의 AI 금융 가이드.
