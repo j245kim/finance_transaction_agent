@@ -1,0 +1,15 @@
+{% extends "base.html" %} {% block content %}
+<div class="shadow-wrap">
+  <div class="form-wrap">
+    <h3>개인정보 수정</h3>
+    <br />
+    <form method="POST">
+      {% csrf_token %} {{ form }}
+      <!-- 폼을 출력 -->
+      <button type="submit">수정 완료</button>
+    </form>
+    <a class="signup-link" href="/">취소</a>
+    <!-- 프로필 보기로 돌아가는 링크 -->
+  </div>
+</div>
+{% endblock content %}

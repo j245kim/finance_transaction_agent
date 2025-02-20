@@ -1,0 +1,662 @@
+{% extends "base.html" %} {% block content %}
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <!-- Encoding of HTML file -->
+    <meta charset="UTF-8" />
+    <!-- Title of the page -->
+    <title>Financial Advisor | Home</title>
+    {% load static %}
+    <!-- Public style -->
+    <style>
+      body {
+        background-color: #f9f9f9;
+        min-width: 980px;
+        margin-top: 0;
+      }
+    </style>
+    <!-- End of public style -->
+  </head>
+  <body>
+    <!-- Header style -->
+    <style>
+      header {
+        background-color: #eaeaea;
+        width: 100%;
+        position: fixed;
+        top: 0;
+        padding-left: 10px;
+        padding-bottom: 10px;
+        padding-top: 5px;
+        z-index: 5;
+      }
+    </style>
+    <!-- End of header style -->
+    <header>
+      <!-- Logo button -->
+      <!-- Logo button font -->
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Michroma&family=Noto+Sans+KR:wght@100..900&display=swap"
+        rel="stylesheet"
+      />
+      <!-- End of logo button font -->
+      <!-- Logo button style -->
+      <style>
+        .logoletter {
+          border: none;
+          background-color: transparent;
+          font-weight: bold;
+          font-size: 18px;
+          color: #606060;
+          text-decoration: none;
+          align-items: center;
+          float: left; /* 왼쪽으로 정렬하기 */
+        }
+        .logoletter:hover {
+          color: #493266;
+        }
+        .logomain {
+          font-family: Michroma;
+          font-size: 40px;
+          margin: 0 auto;
+          color: #606060;
+        }
+        .logomain:hover {
+          color: #493266;
+        }
+
+        .loading-spinner {
+          width: 30px;
+          height: 30px;
+          border: 5px solid #f3f3f3; /* Light gray */
+          border-top: 5px solid #3498db; /* Blue */
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin: 0 auto;
+        }
+
+        @keyframes spin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+      </style>
+      <!-- End of logo button style -->
+      <a class="logoletter" href="{% url 'base:home' %}">
+        <span class="logomain">STFO</span><br />Financial Advisor
+      </a>
+      <!-- End of logo button -->
+
+      <!-- TTS toggle button -->
+      <!-- TTS font -->
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap"
+        rel="stylesheet"
+      />
+      <!-- End of TTS font -->
+      <!-- TTS style -->
+      <style>
+        /* Switch box around the slider */
+        .toggleswitch {
+          position: absolute;
+          display: inline-block;
+          width: 60px;
+          height: 34px;
+          margin-top: 24px;
+          right: 160px;
+        }
+        /* Hide default HTML checkbox */
+        .toggleswitch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+        /* The slider */
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #ccc;
+          -webkit-transition: 0.4s;
+          transition: 0.4s;
+        }
+        .slider:before {
+          position: absolute;
+          content: "";
+          height: 26px;
+          width: 26px;
+          left: 4px;
+          bottom: 4px;
+          background-color: white;
+          -webkit-transition: 0.4s;
+          transition: 0.4s;
+        }
+        input:checked + .slider {
+          background-color: #a773eb;
+        }
+        input:checked + .slider:before {
+          -webkit-transform: translateX(26px);
+          -ms-transform: translateX(26px);
+          transform: translateX(26px);
+        }
+        /* Rounded sliders */
+        .slider.round {
+          border-radius: 34px;
+        }
+        .slider.round:before {
+          border-radius: 50%;
+        }
+        /* 읽어주기 text */
+        .tts {
+          position: absolute;
+          float: right;
+          font-family: Do Hyeon;
+          font-size: 28px;
+          vertical-align: middle;
+          margin-top: 26px;
+          right: 235px;
+        }
+      </style>
+      <!-- End of TTS style -->
+      <!-- TTS script -->
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const toggleSwitch = document.getElementById("tts-toggle");
+
+          toggleSwitch.addEventListener("change", function () {
+            if (this.checked) {
+              showPopup();
+            } else {
+              disableTTS();
+            }
+          });
+
+          // 팝업이 처음부터 뜨는 문제 방지
+          closePopup();
+        });
+
+        let isTTSenabled = false;
+
+        function showPopup() {
+          document.getElementById("popup").style.display = "block";
+          document.getElementById("overlay").style.display = "block";
+        }
+
+        function closePopup() {
+          document.getElementById("popup").style.display = "none";
+          document.getElementById("overlay").style.display = "none";
+        }
+
+        function enableTTS() {
+          isTTSenabled = true;
+          alert("TTS 기능이 활성화되었습니다.");
+          speakText("TTS 기능이 활성화됐습니다");
+          closePopup();
+        }
+
+        function disableTTS() {
+          isTTSenabled = false;
+          alert("TTS 기능이 비활성화되었습니다.");
+          document.getElementById("tts-toggle").checked = false; // 스위치 OFF
+          speechSynthesis.cancel();
+          closePopup();
+        }
+
+        function speakText(text) {
+          if ("speechSynthesis" in window) {
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "ko-KR";
+            speechSynthesis.speak(utterance);
+          } else {
+            alert("현재 브라우저는 TTS를 지원하지 않습니다.");
+          }
+        }
+
+        // 특수 문자를 제거하는 함수
+        function cleanText(text) {
+          // 알파벳, 숫자, 공백을 제외한 모든 문자를 제거
+          return text.replace(/[^a-zA-Z0-9\s가-힣]/g, "");
+        }
+
+        function showPopup() {
+          document.getElementById("popup").style.display = "block";
+          document.getElementById("overlay").style.display = "block";
+        }
+
+        function closePopup() {
+          document.getElementById("popup").style.display = "none";
+          document.getElementById("overlay").style.display = "none";
+        }
+
+        function enableTTS() {
+          isTTSenabled = true;
+          alert("TTS 기능이 활성화되었습니다.");
+          speakText("TTS 기능이 활성화됐습니다");
+          closePopup();
+        }
+
+        function disableTTS() {
+          isTTSenabled = false;
+          alert("TTS 기능이 비활성화되었습니다.");
+          document.getElementById("tts-toggle").checked = false;
+          closePopup();
+        }
+
+        function speakText(text) {
+          if ("speechSynthesis" in window) {
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "ko-KR";
+            speechSynthesis.speak(utterance);
+          } else {
+            alert("현재 브라우저는 TTS를 지원하지 않습니다.");
+          }
+        }
+
+        // 특수 문자를 제거하는 함수
+        function cleanText(text) {
+          return text.replace(/[^a-zA-Z0-9\s가-힣]/g, "");
+        }
+      </script>
+      <!-- End of TTS script -->
+
+      <!-- 해당 page에서는 TTS 기능 사용 불가
+      <p class="tts">읽어주기</p>
+      <label class="toggleswitch">
+        <input type="checkbox" id="tts-toggle" />
+        <span class="slider round"></span>
+      </label>-->
+
+      <!-- 팝업 오버레이 -->
+
+      <style>
+        .popup {
+          display: none;
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: white;
+          padding: 20px;
+          border-radius: 6px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          text-align: center;
+          z-index: 1000;
+          min-width: 290px;
+        }
+        .overlay {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          z-index: 999;
+        }
+        .popup button {
+          margin: 10px;
+          padding: 10px 20px;
+          border: none;
+          cursor: pointer;
+          font-size: 16px;
+          border-radius: 3px;
+        }
+        .popup .yes-button {
+          background-color: #8157b1;
+          color: white;
+        }
+        .popup .yes-button:hover {
+          background-color: #a674e2;
+        }
+        .popup .no-button {
+          background-color: #aaaaaa;
+          color: white;
+        }
+        .popup .no-button:hover {
+          background-color: #8b8b8b;
+        }
+      </style>
+
+      <div class="overlay" id="overlay" onclick="closePopup()"></div>
+
+      <!-- 팝업 창 -->
+      <div class="popup" id="popup">
+        <p>TTS 기능을 사용하시겠습니까?</p>
+        <button class="yes-button" onclick="enableTTS()">TTS 사용</button>
+        <button class="no-button" onclick="disableTTS()">TTS 사용안함</button>
+      </div>
+
+      <!-- End of TTS pop up overlay-->
+      <!-- End of TTS -->
+
+      <!-- Logout button -->
+      <!-- Logout button style -->
+      <style>
+        .logout-button {
+          background-color: #0000001a;
+          text-decoration: none;
+          border-radius: 4px;
+          -webkit-box-pack: center;
+          -webkit-box-align: center;
+          align-items: center;
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          width: fit-content;
+          border: 1px solid transparent;
+          padding: 0px 12px;
+          height: 34px;
+          font-size: 14px;
+          line-height: 100%;
+          font-weight: 600;
+          cursor: pointer;
+          color: #303030;
+          padding: 20px;
+          position: absolute;
+          top: 25px;
+          right: 25px; /* 화면 오른쪽에서 20px 거리 */
+        }
+        /* when hover */
+        .logout-button:hover {
+          background-color: #e66565;
+          color: #f9f9f9;
+          transition: 0.2s;
+        }
+      </style>
+      <!-- End of logout button style -->
+      <a href="{% url 'base:logout' %}" class="logout-button">Log Out</a>
+      <!-- End of logout button -->
+    </header>
+    <!-- Sidebar -->
+    <!-- Sidebar style -->
+    <style>
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        margin-top: 80px;
+        width: 180px;
+        height: 100%;
+        padding: 10px;
+        padding-top: 24px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        background-color: #f7f7f5;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+      .sidebar.closed {
+        transform: translateX(-100%);
+      }
+      /* 버튼 스타일 */
+      .sidebar-button {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 10px;
+        text-decoration: none;
+        border-radius: 4px;
+        background-color: transparent;
+        transition: background 0.3s ease;
+        text-align: center;
+      }
+      .sidebar-button img {
+        width: 36px;
+        height: 36px;
+        margin-right: 8px;
+      }
+      .sidebar-button span {
+        font-size: 20px;
+        color: #444444;
+      }
+      /* when hover */
+      .sidebar-button:hover {
+        background-color: #dddddd;
+        transition: 0.2s;
+      }
+      .nav-title {
+        font-size: 18px;
+        margin-bottom: 10px;
+        color: #222222;
+        align-items: center;
+      }
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+        align-items: center;
+        margin-bottom: 10px;
+        align-items: center;
+      }
+      .sidebar ul li a {
+        text-decoration: none;
+        font-size: 16px;
+        padding: 8px;
+        border-radius: 4px;
+        color: #444444;
+        align-content: center;
+      }
+      /* Close button */
+      .closebutton {
+        position: absolute;
+        top: 100px;
+        left: 200px;
+        background-color: #f7f7f5;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+      }
+    </style>
+    <!-- End of sidebar style -->
+    <!-- Sidebar close button -->
+    <!-- Sidebar closing script -->
+    <script>
+      document
+        .getElementById("closebutton")
+        .addEventListener("click", function () {
+          document.querySelector(".sidebar").classList.toggle("sidebar.closed");
+        });
+    </script>
+    <!-- End of sidebar closing script -->
+    <!-- <button class="closebutton" id="closebutton">&lt;</button>-->
+    <!-- End of sidebar close button-->
+    <nav class="sidebar">
+      <h2 class="nav-title">분석</h2>
+      <!-- 분석 section -->
+      <ul class="sidebar-menu">
+        <li>
+          <a href="{% url 'base:survey' %}" class="sidebar-button">
+            <img
+              src="{% static 'home_image/sidebar_tendency.png' %}"
+              alt="정보"
+            />
+            <p>투자성향</p>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'base:predict' %}" class="sidebar-button">
+            <img
+              src="{% static 'home_image/sidebar_statisticchart.png' %}"
+              alt="설명"
+            />
+            <p>통계</p>
+          </a>
+        </li>
+      </ul>
+      <!-- End of 분석 section -->
+      <!-- 기능 section -->
+      <h2 class="nav-title">기능</h2>
+      <ul class="sidebar-menu">
+        <li>
+          <a href="{% url 'base:manual' %}" class="sidebar-button">
+            <img
+              src="{% static 'home_image/sidebar_information.png' %}"
+              alt="정보"
+            />
+            <p>정보</p>
+          </a>
+        </li>
+        <li>
+          <a href="https://www.naver.com" class="sidebar-button">
+            <img
+              src="{% static 'home_image/sidebar_function.png' %}"
+              alt="설명"
+            />
+            <p>설명</p>
+          </a>
+        </li>
+      </ul>
+      <!-- End of 기능 section -->
+      <!-- 설정 section -->
+      <h2 class="nav-title">설정</h2>
+      <ul class="sidebar-menu">
+        <li>
+          <a href="{% url 'base:profile_edit' %}" class="sidebar-button">
+            <img
+              src="{% static 'home_image/sidebar_useredit.png' %}"
+              alt="정보"
+            />
+            <p>개인정보</p>
+          </a>
+        </li>
+      </ul>
+      <!-- End of 설정 section -->
+    </nav>
+    <!-- End of sidebar-->
+
+    <!-- Main content -->
+    <!-- Main content style -->
+    <style>
+      .home {
+        margin-left: 210px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        text-align: center;
+      }
+
+      .sub-text {
+        font-size: 20px;
+        color: #555;
+      }
+
+      .intro {
+        margin-bottom: 20px;
+      }
+
+      .error {
+        color: red;
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .result {
+        margin-bottom: 20px;
+        margin-top: 30px;
+      }
+
+      input {
+        flex: 1;
+        padding: 10px;
+        border: 2px solid #afafaf;
+        border-radius: 10px;
+        margin-right: 0px;
+        font-size: 16px;
+        outline: none;
+        height: 60px;
+        /* 스크롤 가능하게 하기 위해서 height 값 삭제 */
+        width: 40vw; /* 변경: 뷰포트 너비 단위로 변경 */
+        margin-top: 20px; /* Moves input down after the results */
+      }
+      input:focus {
+        border-color: #a773eb;
+      }
+
+      #send-button {
+        transform: rotate(90deg);
+        width: 32px;
+        height: 32px;
+        right: 0px;
+      }
+      img#send-button {
+        -webkit-transform-origin-y: 3px;
+        -webkit-transform-origin-x: 50px;
+      }
+    </style>
+    <!-- End of main content style -->
+    <div class="home">
+      <div class="intro">
+        <h1>Stock Analysis Model</h1>
+        <p class="sub-text">티커를 바탕으로 주식을 분석하는 모델!</p>
+      </div>
+
+      <!-- 예측 결과 출력 -->
+      {% if summary %}
+      <div class="result1">
+        <h2>모델 결과</h2>
+        <pre>{{ summary }}</pre>
+      </div>
+      {% endif %}
+
+      <!-- 주식 describe() 출력 -->
+      {% if describe_data %}
+      <div class="result">
+        <h2>주식 통계 정보 (describe)</h2>
+        <pre>{{ describe_data|safe }}</pre>
+      </div>
+      {% endif %}
+
+      <!-- 주식 그래프 출력 -->
+      {% if graph_data %}
+      <div class="result">
+        <h2>주식 1년 그래프</h2>
+        <img src="data:image/png;base64,{{ graph_data }}" alt="Stock Graph" />
+      </div>
+      {% endif %}
+
+      <!-- 티커 입력 폼 -->
+      <form method="POST" id="prediction-form">
+        {% csrf_token %} {{ form }}
+        <img
+          id="send-button"
+          src="{% static 'home_image/arrow.png' %}"
+          style="position: relative; left: 52%; top: -37%; cursor: pointer"
+        />
+      </form>
+
+      <!-- 오류 메시지 출력 -->
+      {% if error %}
+      <p class="error">{{ error }}</p>
+      {% endif %}
+    </div>
+
+    <style>
+      .result1 {
+        margin-top: 880px;
+      }
+    </style>
+    <script>
+      document
+        .getElementById("send-button")
+        .addEventListener("click", function (event) {
+          event.preventDefault();
+          document.getElementById("prediction-form").submit();
+        });
+    </script>
+
+    <!-- End of main content -->
+  </body>
+</html>
+
+{% endblock content %}

@@ -1,0 +1,450 @@
+/* 기본 스타일 */
+body {
+  font-family: "Arial";
+  margin: 0;
+  padding: 0;
+  background-color: #fafafa;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 23px;
+  column-gap: 10px;
+  position: relative;
+  right: 5%;
+}
+
+/* 헤더 스타일 */
+.header {
+  font-family: Arial;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgb(250, 250, 250);
+  margin: 0;
+  padding: 15px 30px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+.logo {
+  font-size: 12px;
+  align-content: center;
+  color: #111111;
+  cursor: pointer;
+  text-decoration: none;
+  margin-top: 5px;
+}
+
+.logout-button {
+  background-color: #0000001a;
+  text-decoration: none;
+  border-radius: 5px;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  width: fit-content;
+  border: 1px solid transparent;
+  padding: 0px 12px;
+  height: 34px;
+  font-size: 14px;
+  line-height: 100%;
+  font-weight: 600;
+  cursor: pointer;
+  color: black;
+  padding: 20px 20px;
+  position: absolute; /* 버튼을 절대 위치로 설정 */
+  top: 20px; /* 화면 상단에서 20px 거리 */
+  right: 20px; /* 화면 오른쪽에서 20px 거리 */
+}
+
+.logout-button:hover {
+  background: #0000001a;
+}
+
+/* 컨테이너 (네비게이션 + 메인 컨텐츠) */
+.container {
+  display: flex;
+  margin-top: 60px; /* 헤더 높이만큼 여백 */
+}
+
+/* 사이드바 스타일 */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100dvh;
+  padding-top: 20px;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-bottom: 20px;
+  position: fixed;
+  background-color: #f7f7f5;
+  left: 0;
+  top: 0;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1); /* shadow */
+}
+
+.nav-title {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #222222;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin-bottom: 10px;
+}
+
+.sidebar ul li a {
+  text-decoration: none;
+  font-size: 16px;
+  padding: 8px;
+  border-radius: 5px;
+  color: #444444;
+}
+
+.sidebar ul li a:hover {
+  background: #acb3d0;
+}
+
+/* 메인 컨텐츠 스타일 */
+.content {
+  flex: 0.99;
+  margin-left: 250px; /* 사이드바 너비 + 여백 */
+  padding: 20px;
+}
+
+.sub-text {
+  font-size: 20px;
+  color: #555;
+}
+
+/* 챗봇 영역 */
+.chatbot {
+  margin: auto;
+  max-width: 920px;
+  align-items: center;
+}
+
+/* .chatbox {
+  background: #fff;
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  max-height: 300px;
+  overflow-y: scroll;
+} */
+
+#chat-area {
+  flex: 1;
+  padding-bottom: 10px;
+  margin-left: 15%; /* 15% margin on the left */
+  margin-right: 15%; /* 15% margin on the right */
+  width: 70%;
+  height: 100vh; /* Use the entire height of the viewport */
+  box-sizing: border-box; /* Ensure padding and margins are included in the width/height calculation */
+  overflow-y: auto;
+}
+
+/* messagesDiv 스타일 */
+.chat-area .messages {
+  max-height: 500px; /* 최대 높이 설정 (예시) */
+  overflow-y: auto; /* 스크롤 가능하게 설정 */
+}
+
+.message {
+  margin-bottom: 0px;
+  display: flex;
+  align-items: center;
+}
+
+.message.user {
+  justify-content: flex-start;
+}
+
+.message.ai {
+  justify-content: flex-start;
+}
+
+.message-content {
+  max-width: 70%;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.input-area {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  padding: 10px;
+  border-top: 2px solid #ddd; /* 입력 영역 위쪽 테두리 */
+}
+
+#userInput {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid #8c32ffff;
+  border-radius: 20px; /* 둥근 테두리 */
+  margin-right: 10px;
+  font-size: 16px;
+  outline: none;
+  height: 60px;
+  width: 90%;
+}
+
+#send-button {
+  transform: rotate(90deg);
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  position: relative;
+  top: 10px;
+}
+
+/* 준희 Chatbot 기능부분 */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-width: 800px;
+  margin: 0 auto;
+  height: 100vh;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background: #fff;
+  border-radius: 8px;
+}
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+.dropdown-button {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #fff;
+  color: black;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.dropdown-button img {
+  margin-left: 8px;
+  width: 12px;
+  height: 12px;
+}
+
+.dropdown-button:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 200px;
+}
+
+.dropdown-menu button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background: white;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+  color: #333;
+}
+
+.dropdown-menu button .left-content {
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-menu button img.model-icon {
+  margin-right: 10px;
+  width: 20px;
+  height: 20px;
+}
+
+.dropdown-menu button img.check-icon {
+  width: 16px;
+  height: 16px;
+  visibility: hidden;
+}
+
+.dropdown-menu button.selected img.check-icon {
+  visibility: visible;
+}
+
+.dropdown-menu button:hover {
+  background: #f0f0f0;
+}
+
+/* 준희 Chatbot 기능부분 끝 */
+
+/* Introduction Page content */
+.landingcard {
+  border: 1px solid rgb(235, 238, 249);
+  border-radius: 12px;
+  width: 400px;
+  padding: 24px;
+  box-sizing: border-box;
+  box-shadow: rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+/* TTS Pop-up */
+.popup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  z-index: 1000;
+  min-width: 290px;
+}
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+.popup button {
+  margin: 10px;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 4px;
+}
+.popup .yes-button {
+  background-color: #393939;
+  color: white;
+}
+.popup .no-button {
+  background-color: #7f7f7f;
+  color: white;
+}
+
+/* Function page */
+.comment {
+  margin-bottom: 10px;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+main {
+  width: 90%;
+  max-width: 1200px;
+  margin: 32px auto;
+}
+
+/* 유저 */
+.user .message-content {
+  background-color: transparent;
+  padding: 8px;
+  border-radius: 5px;
+  text-align: left;
+  margin-bottom: 5px;
+}
+
+.ai .message-content {
+  background-color: transparent;
+  padding: 8px;
+  border-radius: 5px;
+  text-align: left;
+  margin-bottom: 5px;
+}
+
+/* Formatting AI response */
+.ai .message-content hr {
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 10px 0;
+}
+
+.ai .message-content p {
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+.moreinfo {
+  position: fixed;
+  bottom: 0;
+  right: -5%;
+  width: 100%;
+  color: grey;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 14px;
+}
+
+.moreinfo a {
+  color: grey; /* 링크 색상 */
+  text-decoration: none; /* 링크 밑줄 제거 */
+  margin: 0 10px; /* 링크 사이 간격 */
+}
+
+.moreinfo a:hover {
+  text-decoration: underline; /* 호버 시 밑줄 */
+}
+
+#tts {
+  position: relative;
+  right: 10%;
+}

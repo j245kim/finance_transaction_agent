@@ -1,0 +1,912 @@
+{% extends "base.html" %} {% block content %}
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <!-- Encoding of HTML file -->
+    <meta charset="UTF-8" />
+    <!-- Title of the page -->
+    <title>Financial Advisor | Home</title>
+    {% load static %}
+    <!-- Public style -->
+    <style>
+      body {
+        background-color: #f9f9f9;
+        min-width: 980px;
+      }
+    </style>
+    <!-- End of public style -->
+  </head>
+  <body>
+    <!-- Header style -->
+    <style>
+      header {
+        background-color: #eaeaea;
+        width: 100%;
+        position: fixed;
+        top: 0;
+        padding-left: 10px;
+        padding-bottom: 10px;
+        padding-top: 5px;
+        z-index: 5;
+      }
+    </style>
+    <!-- End of header style -->
+    <header>
+      <!-- Logo button -->
+      <!-- Logo button font -->
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Michroma&family=Noto+Sans+KR:wght@100..900&display=swap"
+        rel="stylesheet"
+      />
+      <!-- End of logo button font -->
+      <!-- Logo button style -->
+      <style>
+        .logoletter {
+          border: none;
+          background-color: transparent;
+          font-weight: bold;
+          font-size: 18px;
+          color: #606060;
+          text-decoration: none;
+          align-items: center;
+          float: left; /* 왼쪽으로 정렬하기 */
+        }
+        .logoletter:hover {
+          color: #493266;
+        }
+        .logomain {
+          font-family: Michroma;
+          font-size: 40px;
+          margin: 0 auto;
+          color: #606060;
+        }
+        .logomain:hover {
+          color: #493266;
+        }
+
+        .loading-spinner {
+          width: 30px;
+          height: 30px;
+          border: 5px solid #f3f3f3; /* Light gray */
+          border-top: 5px solid #3498db; /* Blue */
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin: 0 auto;
+        }
+
+        @keyframes spin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+      </style>
+      <!-- End of logo button style -->
+      <a class="logoletter" href="{% url 'base:home' %}">
+        <span class="logomain">STFO</span><br />Financial Advisor
+      </a>
+      <!-- End of logo button -->
+
+      <!-- TTS toggle button -->
+      <!-- TTS font -->
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap"
+        rel="stylesheet"
+      />
+      <!-- End of TTS font -->
+      <!-- TTS style -->
+      <style>
+        /* Switch box around the slider */
+        .toggleswitch {
+          position: absolute;
+          display: inline-block;
+          width: 60px;
+          height: 34px;
+          margin-top: 24px;
+          right: 160px;
+        }
+        /* Hide default HTML checkbox */
+        .toggleswitch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+        /* The slider */
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #ccc;
+          -webkit-transition: 0.4s;
+          transition: 0.4s;
+        }
+        .slider:before {
+          position: absolute;
+          content: "";
+          height: 26px;
+          width: 26px;
+          left: 4px;
+          bottom: 4px;
+          background-color: white;
+          -webkit-transition: 0.4s;
+          transition: 0.4s;
+        }
+        input:checked + .slider {
+          background-color: #a773eb;
+        }
+        input:checked + .slider:before {
+          -webkit-transform: translateX(26px);
+          -ms-transform: translateX(26px);
+          transform: translateX(26px);
+        }
+        /* Rounded sliders */
+        .slider.round {
+          border-radius: 34px;
+        }
+        .slider.round:before {
+          border-radius: 50%;
+        }
+        /* 읽어주기 text */
+        .tts {
+          position: absolute;
+          float: right;
+          font-family: Do Hyeon;
+          font-size: 28px;
+          vertical-align: middle;
+          margin-top: 26px;
+          right: 235px;
+        }
+      </style>
+      <!-- End of TTS style -->
+      <!-- TTS script -->
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const toggleSwitch = document.getElementById("tts-toggle");
+
+          toggleSwitch.addEventListener("change", function () {
+            if (this.checked) {
+              showPopup();
+            } else {
+              disableTTS();
+            }
+          });
+
+          // 팝업이 처음부터 뜨는 문제 방지
+          closePopup();
+        });
+
+        let isTTSenabled = false;
+
+        function showPopup() {
+          document.getElementById("popup").style.display = "block";
+          document.getElementById("overlay").style.display = "block";
+        }
+
+        function closePopup() {
+          document.getElementById("popup").style.display = "none";
+          document.getElementById("overlay").style.display = "none";
+        }
+
+        function enableTTS() {
+          isTTSenabled = true;
+          alert("TTS 기능이 활성화되었습니다.");
+          speakText("TTS 기능이 활성화됐습니다");
+          closePopup();
+        }
+
+        function disableTTS() {
+          isTTSenabled = false;
+          alert("TTS 기능이 비활성화되었습니다.");
+          document.getElementById("tts-toggle").checked = false; // 스위치 OFF
+          speechSynthesis.cancel();
+          closePopup();
+        }
+
+        function speakText(text) {
+          if ("speechSynthesis" in window) {
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "ko-KR";
+            speechSynthesis.speak(utterance);
+          } else {
+            alert("현재 브라우저는 TTS를 지원하지 않습니다.");
+          }
+        }
+
+        // 특수 문자를 제거하는 함수
+        function cleanText(text) {
+          // 알파벳, 숫자, 공백을 제외한 모든 문자를 제거
+          return text.replace(/[^a-zA-Z0-9\s가-힣]/g, "");
+        }
+
+        function showPopup() {
+          document.getElementById("popup").style.display = "block";
+          document.getElementById("overlay").style.display = "block";
+        }
+
+        function closePopup() {
+          document.getElementById("popup").style.display = "none";
+          document.getElementById("overlay").style.display = "none";
+        }
+
+        function enableTTS() {
+          isTTSenabled = true;
+          alert("TTS 기능이 활성화되었습니다.");
+          speakText("TTS 기능이 활성화됐습니다");
+          closePopup();
+        }
+
+        function disableTTS() {
+          isTTSenabled = false;
+          alert("TTS 기능이 비활성화되었습니다.");
+          document.getElementById("tts-toggle").checked = false;
+          closePopup();
+        }
+
+        function speakText(text) {
+          if ("speechSynthesis" in window) {
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "ko-KR";
+            speechSynthesis.speak(utterance);
+          } else {
+            alert("현재 브라우저는 TTS를 지원하지 않습니다.");
+          }
+        }
+
+        // 특수 문자를 제거하는 함수
+        function cleanText(text) {
+          return text.replace(/[^a-zA-Z0-9\s가-힣]/g, "");
+        }
+      </script>
+      <!-- End of TTS script -->
+
+      <p class="tts">읽어주기</p>
+      <label class="toggleswitch">
+        <input type="checkbox" id="tts-toggle" />
+        <span class="slider round"></span>
+      </label>
+
+      <!-- 팝업 오버레이 -->
+
+      <style>
+        .popup {
+          display: none;
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: white;
+          padding: 20px;
+          border-radius: 6px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          text-align: center;
+          z-index: 1000;
+          min-width: 290px;
+        }
+        .overlay {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          z-index: 999;
+        }
+        .popup button {
+          margin: 10px;
+          padding: 10px 20px;
+          border: none;
+          cursor: pointer;
+          font-size: 16px;
+          border-radius: 3px;
+        }
+        .popup .yes-button {
+          background-color: #9c6dd4;
+          color: white;
+        }
+        .popup .yes-button:hover {
+          background-color: #8157b1;
+        }
+        .popup .no-button {
+          background-color: #aaaaaa;
+          color: white;
+        }
+        .popup .no-button:hover {
+          background-color: #8b8b8b;
+        }
+      </style>
+
+      <div class="overlay" id="overlay" onclick="closePopup()"></div>
+
+      <!-- 팝업 창 -->
+      <div class="popup" id="popup">
+        <p>TTS 기능을 사용하시겠습니까?</p>
+        <button class="yes-button" onclick="enableTTS()">TTS 사용</button>
+        <button class="no-button" onclick="disableTTS()">TTS 사용안함</button>
+      </div>
+
+      <!-- End of TTS pop up overlay-->
+      <!-- End of TTS -->
+
+      <!-- Logout button -->
+      <!-- Logout button style -->
+      <style>
+        .logout-button {
+          background-color: #0000001a;
+          text-decoration: none;
+          border-radius: 4px;
+          -webkit-box-pack: center;
+          -webkit-box-align: center;
+          align-items: center;
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          width: fit-content;
+          border: 1px solid transparent;
+          padding: 0px 12px;
+          height: 34px;
+          font-size: 14px;
+          line-height: 100%;
+          font-weight: 600;
+          cursor: pointer;
+          color: #303030;
+          padding: 20px;
+          position: absolute;
+          top: 25px;
+          right: 25px; /* 화면 오른쪽에서 20px 거리 */
+        }
+        /* when hover */
+        .logout-button:hover {
+          background-color: #cf5f5f;
+          color: #f9f9f9;
+          transition: 0.2s;
+        }
+      </style>
+      <!-- End of logout button style -->
+      <a href="{% url 'base:logout' %}" class="logout-button">Log Out</a>
+      <!-- End of logout button -->
+    </header>
+    <!-- Sidebar -->
+    <!-- Sidebar style -->
+    <style>
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        margin-top: 80px;
+        width: 180px;
+        height: 100%;
+        padding: 10px;
+        padding-top: 24px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        background-color: #f7f7f5;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+      .sidebar.closed {
+        transform: translateX(-100%);
+      }
+      /* 버튼 스타일 */
+      .sidebar-button {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 10px;
+        text-decoration: none;
+        border-radius: 4px;
+        background-color: transparent;
+        transition: background 0.3s ease;
+        text-align: center;
+      }
+      .sidebar-button img {
+        width: 36px;
+        height: 36px;
+        margin-right: 8px;
+      }
+      .sidebar-button span {
+        font-size: 20px;
+        color: #444444;
+      }
+      /* when hover */
+      .sidebar-button:hover {
+        background-color: #dddddd;
+        transition: 0.2s;
+      }
+      .nav-title {
+        font-size: 18px;
+        margin-bottom: 10px;
+        color: #222222;
+        align-items: center;
+      }
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+        align-items: center;
+        margin-bottom: 10px;
+        align-items: center;
+      }
+      .sidebar ul li a {
+        text-decoration: none;
+        font-size: 16px;
+        padding: 8px;
+        border-radius: 4px;
+        color: #444444;
+        align-content: center;
+      }
+      /* Close button */
+      .closebutton {
+        position: absolute;
+        top: 100px;
+        left: 200px;
+        background-color: #f7f7f5;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+      }
+    </style>
+    <!-- End of sidebar style -->
+    <!-- Sidebar close button -->
+    <!-- Sidebar closing script -->
+    <script>
+      document
+        .getElementById("closebutton")
+        .addEventListener("click", function () {
+          document.querySelector(".sidebar").classList.toggle("sidebar.closed");
+        });
+    </script>
+    <!-- End of sidebar closing script -->
+    <!-- <button class="closebutton" id="closebutton">&lt;</button>-->
+    <!-- End of sidebar close button-->
+    <nav class="sidebar">
+      <h2 class="nav-title">분석</h2>
+      <!-- 분석 section -->
+      <ul class="sidebar-menu">
+        <li>
+          <a href="{% url 'base:survey' %}" class="sidebar-button">
+            <img
+              src="{% static 'home_image/sidebar_tendency.png' %}"
+              alt="정보"
+            />
+            <p>투자성향</p>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'base:predict' %}" class="sidebar-button">
+            <img
+              src="{% static 'home_image/sidebar_statisticchart.png' %}"
+              alt="설명"
+            />
+            <p>통계</p>
+          </a>
+        </li>
+      </ul>
+      <!-- End of 분석 section -->
+      <!-- 기능 section -->
+      <h2 class="nav-title">기능</h2>
+      <ul class="sidebar-menu">
+        <li>
+          <a href="{% url 'base:manual' %}" class="sidebar-button">
+            <img
+              src="{% static 'home_image/sidebar_information.png' %}"
+              alt="정보"
+            />
+            <p>정보</p>
+          </a>
+        </li>
+        <li>
+          <a href="https://rose-sail-7a4.notion.site/STFO-Financial-Advisor-192107a3f67980b9bc70ed3c46479d5f" class="sidebar-button">
+            <img
+              src="{% static 'home_image/sidebar_function.png' %}"
+              alt="설명"
+            />
+            <p>설명</p>
+          </a>
+        </li>
+      </ul>
+      <!-- End of 기능 section -->
+      <!-- 설정 section -->
+      <h2 class="nav-title">설정</h2>
+      <ul class="sidebar-menu">
+        <li>
+          <a href="{% url 'base:profile_edit' %}" class="sidebar-button">
+            <img
+              src="{% static 'home_image/sidebar_useredit.png' %}"
+              alt="정보"
+            />
+            <p>개인정보</p>
+          </a>
+        </li>
+      </ul>
+      <!-- End of 설정 section -->
+    </nav>
+    <!-- End of sidebar-->
+    <!-- Main contents -->
+    <!-- Main contents style -->
+    <style>
+      .content {
+        flex: 0.99;
+        margin-left: 230px; /* sidebar width + margin */
+        padding: 20px;
+      }
+      .intro {
+        margin-left: 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        min-height: 23px;
+        position: relative;
+        right: 5%;
+        top: 40%;
+      }
+      .sub-text {
+        font-size: 20px;
+        color: #555;
+      }
+      .chatbot {
+        margin: auto;
+        max-width: 920px;
+        align-items: center;
+      }
+      #chat-area {
+        flex: 1;
+        padding-bottom: 10px;
+        margin-left: 15%; /* 15% margin on the left */
+        margin-right: 15%; /* 15% margin on the right */
+        width: 70%; /* This ensures the chat area takes up 70% of the screen width (100% - 2 * 15%) */
+        height: 100vh; /* Use the entire height of the viewport */
+        box-sizing: border-box; /* Ensure padding and margins are included in the width/height calculation */
+        overflow-y: auto;
+      }
+      /* messagesDiv 스타일 */
+      .chat-area .messages {
+        max-height: 500px; /* 최대 높이 설정 (예시) */
+        overflow-y: auto; /* 스크롤 가능하게 설정 */
+      }
+      .message {
+        margin-bottom: 0px;
+        display: flex;
+        align-items: center;
+      }
+      .message.user {
+        justify-content: flex-start;
+      }
+      .message.ai {
+        justify-content: flex-start;
+      }
+      .message-content {
+        max-width: 70%;
+        padding: 10px;
+        border-radius: 10px;
+        font-size: 14px;
+      }
+      .input-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        max-width: 800px;
+      }
+      #userInput {
+        flex: 1;
+        padding: 10px;
+        border: 2px solid #afafaf;
+        border-radius: 10px; /* 둥근 테두리 */
+        margin-right: 10px;
+        font-size: 16px;
+        outline: none;
+        height: 60px;
+        width: 90%;
+      }
+      #userInput:focus {
+        border-color: #a773eb;
+      }
+      #sendbutton {
+        transform: rotate(90deg);
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        cursor: pointer;
+        right: 0px;
+      }
+      #micbutton {
+        /* originally send-button */
+        position: relative;
+        right: 6.5%;
+        cursor: pointer;
+        max-width: 30px;
+        max-height: 30px;
+        top: 0px;
+      }
+      #micbutton-stop {
+        position: relative;
+        right: 6.5%;
+        cursor: pointer;
+        max-width: 30px;
+        max-height: 30px;
+        display: none;
+        top: 0px;
+      }
+    </style>
+    <!-- End of main contents style -->
+    <!-- Main contents script -->
+    <script>
+      var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+      var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
+      var SpeechRecognitionEvent =
+        SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
+      var recognition;
+      var isRecording = false;
+
+      function toggleSpeech() {
+        if (isRecording) {
+          stopSpeech();
+        } else {
+          startSpeech();
+        }
+      }
+
+      function startSpeech() {
+        recognition = new SpeechRecognition();
+        var speechRecognitionList = new SpeechGrammarList();
+        recognition.grammars = speechRecognitionList;
+        recognition.lang = "ko-KR";
+        recognition.interimResults = false; // true: 중간 결과를 반환, false: 최종 결과만 반환
+        recognition.continous = true; // true: 음성인식을 계속해서 수행
+        recognition.maxAlternatives = 1;
+
+        recognition.start();
+
+        // 버튼 이미지 변경
+        document.getElementById("micbutton").style.display = "none";
+        document.getElementById("micbutton-stop").style.display =
+          "inline-block";
+
+        isRecording = true;
+
+        recognition.onresult = function (event) {
+          var speechResult = event.results[0][0].transcript.toLowerCase();
+          console.log("Confidence: " + event.results[0][0].confidence);
+          console.log("Speech Result: " + speechResult);
+          document.getElementById("userInput").value = speechResult;
+        };
+
+        recognition.onspeechstart = function (event) {
+          console.log("SpeechRecognition.onspeechstart");
+        };
+
+        recognition.onerror = function (event) {
+          console.error("SpeechRecognition error: ", event.error);
+        };
+
+        // onend 이벤트 핸들러 제거: 자동으로 끝나지 않도록
+        recognition.onend = function () {
+          console.log("음성 인식이 종료되었습니다.");
+          // 음성 인식이 종료되면 다시 mic.png로 버튼을 바꿔야 함
+          if (isRecording) {
+            stopSpeech();
+          }
+        };
+      }
+
+      function stopSpeech() {
+        recognition.stop();
+
+        // 버튼 이미지 원래대로 변경 (mic.png)
+        document.getElementById("micbutton").style.display = "inline-block";
+        document.getElementById("micbutton-stop").style.display = "none";
+        document.getElementById("micbutton").src =
+          "{% static 'home_image/mic.png' %}"; // mic.png로 복구
+
+        isRecording = false;
+      }
+    </script>
+    <!-- End of main contents script -->
+    <main class="content">
+      <div class="intro">
+        <h1>Financial Investment Agent</h1>
+        <p class="sub-text" style="margin-bottom: 18px">최고의 성능</p>
+      </div>
+      <section class="chatbot">
+        <div class="chatbox">
+          <div class="chat-area">
+            <div class="messages" id="messages"></div>
+          </div>
+
+          <div class="input-container">
+            <textarea
+              id="userInput"
+              placeholder="질문을 입력하세요"
+              oninput="autoResize(this)"
+            ></textarea>
+            <img
+              id="micbutton"
+              src="{% static 'home_image/mic.png' %}"
+              onclick="toggleSpeech()"
+            />
+            <img
+              id="micbutton-stop"
+              src="{% static 'home_image/micoff.png' %}"
+              onclick="stopSpeech()"
+            />
+            <img
+              id="sendbutton"
+              src="{% static 'home_image/arrow.png' %}"
+              onclick="sendMessage()"
+            />
+          </div>
+        </div>
+      </section>
+
+      <script>
+        function autoResize(textarea) {
+          // 최소 높이를 유지하도록 설정
+          const minHeight = 60; // 최소 높이 설정
+          textarea.style.height = "auto"; // 높이 초기화
+          textarea.style.height =
+            Math.max(textarea.scrollHeight, minHeight) + "px"; // 자동으로 높이 조정, 최소 높이 유지
+
+          const maxHeight = window.innerHeight * 0.8; // 화면 높이의 80%
+          if (textarea.scrollHeight >= maxHeight) {
+            textarea.style.overflowY = "scroll"; // 스크롤 활성화
+          } else {
+            textarea.style.overflowY = "hidden"; // 스크롤 비활성화
+          }
+        }
+      </script>
+      <style>
+        .message-content {
+          white-space: pre-line; /* 개행을 유지 */
+        }
+      </style>
+
+      <!-- Miscellaneous script -->
+      <script>
+        // Function to send the message
+        async function sendMessage() {
+          const inputField = document.getElementById("userInput");
+          const messagesDiv = document.getElementById("messages");
+          const userMessage = inputField.value.trim();
+
+          if (!userMessage) return;
+
+          removeIntroAndFooter();
+          appendUserMessage(userMessage);
+          inputField.value = "";
+
+          const aiMessageContent = showLoadingIndicator();
+
+          try {
+            const response = await fetchAIResponse(userMessage);
+            displayAIResponse(aiMessageContent, response);
+          } catch (error) {
+            handleError(aiMessageContent, error);
+          }
+
+          inputField.scrollIntoView({ behavior: "smooth" });
+        }
+
+        // 기존 안내 텍스트 제거
+        function removeIntroAndFooter() {
+          document.querySelector(".intro")?.remove();
+          document.getElementById("moreinfo")?.remove();
+        }
+
+        // 사용자 메시지 추가
+        function appendUserMessage(message) {
+          const messagesDiv = document.getElementById("messages");
+          const userMessageDiv = document.createElement("div");
+          userMessageDiv.className = "message user";
+          userMessageDiv.innerHTML = `<div class="message-content">${message}</div>`;
+          messagesDiv.appendChild(userMessageDiv);
+        }
+
+        // 로딩 표시 추가
+        function showLoadingIndicator() {
+          const messagesDiv = document.getElementById("messages");
+          const aiMessageDiv = document.createElement("div");
+          aiMessageDiv.className = "message ai";
+
+          const aiMessageContent = document.createElement("div");
+          aiMessageContent.className = "message-content";
+          aiMessageContent.innerHTML = "<div class='loading-spinner'></div>";
+
+          aiMessageDiv.appendChild(aiMessageContent);
+          messagesDiv.appendChild(aiMessageDiv);
+
+          return aiMessageContent;
+        }
+
+        // API 요청 및 응답 받기
+        async function fetchAIResponse(userMessage) {
+          const username = "{{ user.get_username }}";
+          const apiEndpoint = `http://127.0.0.1:8001/chatgpt/${username}/`;
+
+          const response = await fetch(
+            `${apiEndpoint}${encodeURIComponent(userMessage)}/`
+          );
+          return response.json();
+        }
+
+        // AI 응답 표시
+        function displayAIResponse(aiMessageContent, data) {
+          aiMessageContent.innerHTML = `<hr><p>답변: ${data.content}</p>`;
+
+          if (isTTSenabled) {
+            speakText(cleanText(data.content));
+          }
+        }
+
+        // 오류 처리
+        function handleError(aiMessageContent, error) {
+          console.error("Error fetching AI response:", error);
+          aiMessageContent.textContent = "Error fetching response.";
+        }
+
+        // Enter 키 입력 시 메시지 전송
+        document
+          .getElementById("userInput")
+          .addEventListener("keyup", (event) => {
+            if (event.key === "Enter") sendMessage();
+          });
+
+        /* Contact Us script */
+        function openForm() {
+          document.getElementById("myForm").style.display = "block";
+        }
+
+        function closeForm() {
+          document.getElementById("myForm").style.display = "none";
+        }
+      </script>
+    </main>
+    <!-- End of main contents-->
+    <!-- Footer -->
+    <!-- Footer style -->
+    <style>
+      .moreinfo {
+        position: fixed;
+        bottom: 0;
+        right: -4%;
+        width: 100%;
+        color: grey;
+        text-align: center;
+        padding: 10px 0;
+        font-size: 14px;
+      }
+      .moreinfo a {
+        color: grey; /* 링크 색상 */
+        text-decoration: none; /* 링크 밑줄 제거 */
+        margin: 0 10px; /* 링크 사이 간격 */
+      }
+      .moreinfo a:hover {
+        text-decoration: underline; /* 호버 시 밑줄 */
+      }
+    </style>
+    <!-- End of footer style -->
+    <footer class="moreinfo">
+      <a href="{% url 'base:terms' %}" target="_blank" rel="noopener noreferrer"
+        >이용약관</a
+      >
+      <a
+        href="{% url 'base:copyright' %}"
+        target="_blank"
+        rel="noopener noreferrer"
+        >저작권</a>
+      <a href="mailto:stfo2025@outlook.com">Contact Us</a>
+    </footer>
+    <!-- End of footer -->
+  </body>
+</html>
+
+{% endblock content %}
