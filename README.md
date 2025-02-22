@@ -6,8 +6,8 @@ https://github.com/privatepeople **Back-end** <br> <br>
 https://github.com/Pseudo-Kamita **Front-end** <br>
 
 # 주의사항
-form.py 및 env 파일은 보안이유로 github에 올리지 않았습니다. <br>
-여기 리포지토리의 코드는 오로지 참조용이며, 실사용을 원한다면 STFO한테 연락해주세요. (github에 있는 이메일)
+form.py 및 env 파일은 그리고 vector db 파일들은 보안이유로 github에 올리지 않았습니다. <br>
+여기 리포지토리의 코드는 오로지 참조용이며, 실사용을 원한다면 STFO한테 연락해주세요.
 
 # STFO Financial Advisor 사용법
 
