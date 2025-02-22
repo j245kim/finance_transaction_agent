@@ -300,8 +300,7 @@ AI와 대화할 때 관련 정보를 빠르게 찾아내고, 여러 곳에서 �
 - **어떤 AI 모델을 사용했나요?**
     
     Financial Advisor는 OpenAI의 GPT 4o model을 사용합니다.
-    
-    우리의 금융투자에 최적화된 prompt와 기능들로 GPT
+
     
 - **어디의 금융 정보인가요?**
     
